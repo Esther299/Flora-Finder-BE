@@ -18,14 +18,29 @@ exports.selectUserCollections = async (username) => {
   }
 };
 
+exports.checkCollectionExists = async (username, collectionId) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT COUNT(*) AS count FROM UserCollection WHERE username = ? AND uniqueSerialID = ?",
+      [username, collectionId]
+    );
+    const count = rows[0].count;
+    if (count === 0) {
+      return Promise.reject({ status: 404, msg: "Collection not found" });
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
 exports.insertUserCollection = async (username, newCollection) => {
-   if (typeof newCollection !== "object" || newCollection === null) {
-     return Promise.reject({
-       status: 400,
-       msg: "Bad request",
-     });
-   }
-    const expectedTypes = {
+  if (typeof newCollection !== "object" || newCollection === null) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request",
+    });
+  }
+  const expectedTypes = {
     uniqueSerialID: "string",
     speciesID: "number",
     speciesName: "string",
@@ -43,7 +58,7 @@ exports.insertUserCollection = async (username, newCollection) => {
     ) {
       return Promise.reject({
         status: 400,
-        msg: 'Bad request',
+        msg: "Bad request",
       });
     }
   }
@@ -88,20 +103,29 @@ exports.insertUserCollection = async (username, newCollection) => {
 };
 
 exports.updateCollection = async (username, collectionId, updates) => {
+  if ("matchScore" in updates && typeof updates.matchScore !== "number") {
+    throw { status: 400, msg: "Invalid input" };
+  }
   try {
-    const setClause = Object.keys(updates)
-      .map((key) => `${key} = ?`)
-      .join(", ");
-    const values = [...Object.values(updates), username, collectionId];
-    const [result] = await pool.query(
-      `UPDATE UserCollection SET ${setClause} WHERE username = ? AND uniqueSerialID = ?`,
-      values
-    );
-    //console.log(`Update result: ${JSON.stringify(result)}`);
+    let result;
+    if (Object.keys(updates).length > 0) {
+      const setClause = Object.keys(updates)
+        .map((key) => `${key} = ?`)
+        .join(", ");
+      const values = [...Object.values(updates), username, collectionId];
+
+      const [updateResult] = await pool.query(
+        `UPDATE UserCollection SET ${setClause} WHERE username = ? AND uniqueSerialID = ?`,
+        values
+      );
+      result = updateResult;
+    }
+
     const [updatedCollection] = await pool.query(
       "SELECT uniqueSerialID, speciesID, speciesName, geoTag, matchScore, dateCollected, image, speciesFamily FROM UserCollection WHERE username = ? AND uniqueSerialID = ?",
       [username, collectionId]
     );
+
     if (updatedCollection.length > 0) {
       updatedCollection[0].matchScore = Number(updatedCollection[0].matchScore);
       return updatedCollection[0];
@@ -109,8 +133,7 @@ exports.updateCollection = async (username, collectionId, updates) => {
       return null;
     }
   } catch (error) {
-    //console.log(`Error updating collection: ${error}`);
-    throw error;
+    throw error; 
   }
 };
 

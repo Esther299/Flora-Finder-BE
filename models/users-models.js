@@ -22,6 +22,9 @@ exports.selectUserById = async (username) => {
       [username]
     );
     //console.log(`Query result: ${JSON.stringify(rows)}`);
+     if (!rows[0]) {
+       throw { status: 404, msg: "User not found" };
+     }
     return rows[0];
   } catch (error) {
     //console.log(`Error querying database: ${error}`);

@@ -257,23 +257,113 @@ describe("PATCH /api/users/:username/collections/:collectionId", () => {
       .then(({ body }) => {
         const { collection } = body;
         //console.log(collection);
-        expect(collection).toMatchObject({
-          speciesName: "Updated Rose",
-          matchScore: 99.9,
-        });
+        expect(collection.speciesName).toBe("Updated Rose");
+        expect(collection.matchScore).toBe(99.9);
+      });
+  });
+  test("PATCH:200 updates only the matchScore of a collection for the specified user", () => {
+    const updates = {
+      matchScore: 50,
+    };
+    return request(app)
+      .patch("/api/users/testuser1/collections/unique-id-123")
+      .send(updates)
+      .expect(200)
+      .then(({ body }) => {
+        const { collection } = body;
+        expect(collection.matchScore).toBe(50);
+      });
+  });
+  test("PATCH:200 updates only the speciesName of a collection for the specified user", () => {
+    const updates = {
+      speciesName: "New Flower",
+    };
+    return request(app)
+      .patch("/api/users/testuser1/collections/unique-id-123")
+      .send(updates)
+      .expect(200)
+      .then(({ body }) => {
+        const { collection } = body;
+        expect(collection.speciesName).toBe("New Flower");
+        expect(collection.matchScore).toBe(98.5);
+      });
+  });
+  test("PATCH:200 does not update any properties if the request body is empty", () => {
+    return request(app)
+      .patch("/api/users/testuser1/collections/unique-id-123")
+      .send({})
+      .expect(200)
+      .then(({ body }) => {
+        const { collection } = body;
+        expect(collection.speciesName).toBe("Rose");
+        expect(collection.matchScore).toBe(98.5);
+      });
+  });
+  test("PATCH:400 sends an appropriate status and error message when the provided update properties are incorrect", () => {
+    const updates = {
+      unknownProperty: "Invalid Value",
+    };
+    return request(app)
+      .patch("/api/users/testuser1/collections/unique-id-123")
+      .send(updates)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid input");
+      });
+  });
+  test("PATCH:400 sends an appropriate status and error message when the provided matchScore value is incorrect", () => {
+    const updates = {
+      matchScore: "banana",
+    };
+    return request(app)
+      .patch("/api/users/testuser1/collections/unique-id-123")
+      .send(updates)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid input");
+      });
+  });
+  test("PATCH:404 sends an appropriate status and error message when given a non-existent collection", () => {
+    const updates = {
+      speciesName: "Updated Rose",
+      matchScore: 99.9,
+    };
+    return request(app)
+      .patch("/api/users/testuser/collections/not-a-collection")
+      .send(updates)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Collection not found");
       });
   });
 });
+
 describe("DELETE /api/users/:username/collections/:collectionId", () => {
   test("DELETE:204 deletes a collection for the specified user", () => {
     return request(app)
       .delete("/api/users/testuser1/collections/unique-id-123")
       .expect(204);
   });
+  test("DELETE:404 responds with an appropriate status and error message when given a non-existent id", () => {
+    return request(app)
+      .delete("/api/users/testuser1/collections/not-a-collection")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Collection not found");
+      });
+  });
 });
 
 describe("DELETE /api/users/:username", () => {
   test("DELETE:204 deletes a user", () => {
     return request(app).delete("/api/users/testuser1").expect(204);
+  });
+  test("DELETE:404 responds with an appropriate status and error message when given a non-existent username", () => {
+    return request(app)
+      .delete("/api/users/not-a-user")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User not found");
+      });
   });
 });

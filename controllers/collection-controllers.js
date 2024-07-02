@@ -3,13 +3,14 @@ const {
   insertUserCollection,
   updateCollection,
   deleteCollection,
+  checkCollectionExists,
 } = require("../models/collection-models");
-const {checkUserExists} = require('../models/users-models')
+const { checkUserExists } = require("../models/users-models");
 const moment = require("moment");
 
 exports.getUserCollections = (req, res, next) => {
   const { username } = req.params;
-console.log(`Fetching collections for user: ${username}`);
+  //console.log(`Fetching collections for user: ${username}`);
   const promises = [selectUserCollections(username)];
 
   if (username) {
@@ -22,7 +23,6 @@ console.log(`Fetching collections for user: ${username}`);
       res.status(200).send({ collections });
     })
     .catch((err) => {
-      console.log(`Error fetching collections: ${err.code, err.msg}`);
       next(err);
     });
 };
@@ -42,7 +42,6 @@ exports.addUserCollection = (req, res, next) => {
       res.status(201).send({ collection });
     })
     .catch((err) => {
-      console.log(`Error adding collection: ${err.code, err.msg}`);
       next(err);
     });
 };
@@ -50,30 +49,29 @@ exports.addUserCollection = (req, res, next) => {
 exports.updateUserCollection = (req, res, next) => {
   const { username, collectionId } = req.params;
   const updates = req.body;
-  updateCollection(username, collectionId, updates)
+  checkCollectionExists(username, collectionId)
+    .then(() => {
+      return updateCollection(username, collectionId, updates);
+    })
     .then((collection) => {
-      if (!collection) {
-        return res.status(404).send({ msg: "Collection not found" });
-      }
       res.status(200).send({ collection });
     })
     .catch((err) => {
-      console.log(`Error updating collection: ${err.code, err.msg}`);
       next(err);
     });
 };
 
 exports.deleteUserCollection = (req, res, next) => {
   const { username, collectionId } = req.params;
-  deleteCollection(username, collectionId)
-    .then((deleted) => {
-      if (!deleted) {
-        return res.status(404).send({ msg: "Collection not found" });
-      }
+
+  checkCollectionExists(username, collectionId)
+    .then(() => {
+      return deleteCollection(username, collectionId);
+    })
+    .then(() => {
       res.status(204).send();
     })
     .catch((err) => {
-      console.log(`Error deleting collection: ${err.code, err.msg}`);
       next(err);
     });
 };
