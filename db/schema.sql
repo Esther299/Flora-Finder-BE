@@ -3,7 +3,7 @@
 DROP TABLE IF EXISTS UserCollection;
 DROP TABLE IF EXISTS UserAccount;
 
-
+-- Create UserAccount table
 CREATE TABLE UserAccount (
     username VARCHAR(255) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
