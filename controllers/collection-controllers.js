@@ -10,7 +10,6 @@ const moment = require("moment");
 
 exports.getUserCollections = (req, res, next) => {
   const { username } = req.params;
-  //console.log(`Fetching collections for user: ${username}`);
   const promises = [selectUserCollections(username)];
 
   if (username) {

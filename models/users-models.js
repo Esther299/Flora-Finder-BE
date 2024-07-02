@@ -2,39 +2,88 @@ const pool = require("../db/connection");
 
 exports.selectAllUsers = async () => {
   try {
-    //console.log(`Querying database for all users`);
     const [rows] = await pool.query(
       "SELECT username, name, email, password, dateStamp, avatar FROM UserAccount;"
     );
-    //console.log(`Query result: ${JSON.stringify(rows)}`);
     return rows;
   } catch (error) {
-    //console.log(`Error querying database: ${error}`);
     throw error;
   }
 };
 
 exports.selectUserById = async (username) => {
   try {
-    //console.log(`Querying database for user: ${username}`);
     const [rows] = await pool.query(
       "SELECT username, name, email, password, dateStamp, avatar FROM UserAccount WHERE username = ?",
       [username]
     );
-    //console.log(`Query result: ${JSON.stringify(rows)}`);
-     if (!rows[0]) {
-       throw { status: 404, msg: "User not found" };
-     }
+    if (!rows[0]) {
+      throw { status: 404, msg: "User not found" };
+    }
     return rows[0];
   } catch (error) {
-    //console.log(`Error querying database: ${error}`);
+    throw error;
+  }
+};
+
+exports.createUser = async (newUser) => {
+  const { username, name, email, password } = newUser;
+  if (!username || !name || !email || !password) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid input",
+    });
+  }
+  const expectedTypes = {
+    username: "string",
+    name: "string",
+    email: "string",
+    password: "string",
+  };
+  for (const key in expectedTypes) {
+    if (
+      newUser[key] !== undefined &&
+      typeof newUser[key] !== expectedTypes[key]
+    ) {
+      return Promise.reject({
+        status: 400,
+        msg: "Bad request",
+      });
+    }
+  }
+  try {
+    const sql = `
+      INSERT INTO UserAccount (username, name, email, password, avatar)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    const defaultAvatar =
+      "https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2247726673.jpg";
+
+    const [result] = await pool.query(sql, [
+      username,
+      name,
+      email,
+      password,
+      defaultAvatar,
+    ]);
+    const [rows] = await pool.query(
+      "SELECT * FROM UserAccount WHERE username = ?",
+      [username]
+    );
+    return rows[0];
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return Promise.reject({
+        status: 400,
+        msg: "User already exists",
+      });
+    }
     throw error;
   }
 };
 
 exports.checkUserExists = async (username) => {
   try {
-    //console.log(`Querying database for user: ${username}`);
     const [rows] = await pool.query(
       "SELECT username, name, email, password, dateStamp, avatar FROM UserAccount WHERE username = ?",
       [username]
@@ -43,16 +92,18 @@ exports.checkUserExists = async (username) => {
       throw { status: 404, msg: "User not found" };
     }
   } catch (error) {
-    //console.log(`Error querying database: ${error}`);
+    if (error.code === "ER_DUP_ENTRY") {
+      return Promise.reject({
+        status: 400,
+        msg: "User already exists",
+      });
+    }
     throw error;
   }
-}
+};
 exports.deleteUser = async (username) => {
   try {
-    //  actions are grouped all or nothing
     await pool.query("START TRANSACTION");
-
-    //  get rid of the suers collections
     await pool.query("DELETE FROM UserCollection WHERE username = ?", [
       username,
     ]);
@@ -67,7 +118,6 @@ exports.deleteUser = async (username) => {
     return result.affectedRows > 0;
   } catch (error) {
     await pool.query("ROLLBACK");
-    //console.log(`Error deleting user: ${error}`);
     throw error;
   }
 };
