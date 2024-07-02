@@ -2,6 +2,7 @@ const express = require("express");
 const {
   getUsers,
   getUserById,
+  addUser,
   deleteUserByUsername,
 } = require("./controllers/users-controllers");
 const {
@@ -16,6 +17,7 @@ app.use(express.json());
 
 app.get("/api/users", getUsers);
 app.get("/api/users/:username", getUserById);
+app.post("/api/users", addUser);
 app.get("/api/users/:username/collections", getUserCollections);
 app.post("/api/users/:username/collections", addUserCollection);
 app.patch(
