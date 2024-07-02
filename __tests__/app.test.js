@@ -20,7 +20,6 @@ describe("GET /api/users", () => {
       .expect(200)
       .then(({ body }) => {
         const { users } = body;
-        //console.log(users);
         expect(Array.isArray(users)).toBe(true);
         expect(users).toHaveLength(2);
         users.forEach((user) => {
@@ -44,7 +43,6 @@ describe("GET /api/users/:username", () => {
       .expect(200)
       .then(({ body }) => {
         const { user } = body;
-        //console.log(`Received user: ${JSON.stringify(user)}`); // Debugging line
         expect(user).toEqual(
           expect.objectContaining({
             username: "testuser1",
@@ -66,6 +64,111 @@ describe("GET /api/users/:username", () => {
   });
 });
 
+describe("POST /api/users", () => {
+  test("POST:201 inserts a new user to the db and sends the new user back to the client", () => {
+    const newUser = {
+      username: "testuser3",
+      name: "Test User 3",
+      email: "test3@example.com",
+      password: "hash123",
+    };
+    return request(app)
+      .post("/api/users/")
+      .send(newUser)
+      .expect(201)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user.username).toBe("testuser3");
+        expect(user.name).toBe("Test User 3");
+        expect(user.email).toBe("test3@example.com");
+        expect(user.password).toBe("hash123");
+        expect(user.avatar).toBe(
+          "https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2247726673.jpg"
+        );
+      });
+  });
+  test("POST:201 inserts a new user even with extra properties in the request body", () => {
+    const newUser = {
+      username: "testuser3",
+      name: "Test User 3",
+      email: "test3@example.com",
+      password: "hash123",
+      extraProperty: 2,
+    };
+    return request(app)
+      .post("/api/users/")
+      .send(newUser)
+      .expect(201)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user.username).toBe("testuser3");
+        expect(user.name).toBe("Test User 3");
+        expect(user.email).toBe("test3@example.com");
+        expect(user.password).toBe("hash123");
+        expect(user.avatar).toBe(
+          "https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2247726673.jpg"
+        );
+      });
+  });
+  test("POST:400 sends an appropriate status and error message when provided with a bad user (no user body)", () => {
+    return request(app)
+      .post("/api/users/")
+      .send({
+        username: "testuser3",
+        name: "Test User 3",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid input");
+      });
+  });
+  test("POST:400 sends an appropriate status and error message when provided with invalid property type", () => {
+    const newUser = {
+      username: "testuser3",
+      name: "Test User 3",
+      email: "test1@example.com",
+      password: 3,
+    };
+    return request(app)
+      .post("/api/users/")
+      .send(newUser)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("POST:400 sends an appropriate status and error message when provided with invalid property types", () => {
+    const newUser = {
+      username: "testuser3",
+      name: 2,
+      email: "test1@example.com",
+      password: "hash123",
+    };
+    return request(app)
+      .post("/api/users/")
+      .send(newUser)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("POST:400 sends an appropriate status and error message when trying to post an existing username", () => {
+    const newUser = {
+      username: "testuser1",
+      name: "Test User 3",
+      email: "test1@example.com",
+      password: "hash123",
+    };
+    return request(app)
+      .post("/api/users/")
+      .send(newUser)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User already exists");
+      });
+  });
+});
+
 describe("GET /api/users/:username/collections", () => {
   test("GET:200 sends an array of collections for the specified user", () => {
     return request(app)
@@ -73,7 +176,6 @@ describe("GET /api/users/:username/collections", () => {
       .expect(200)
       .then(({ body }) => {
         const { collections } = body;
-        //console.log(collections);
         expect(Array.isArray(collections)).toBe(true);
         collections.forEach((collection) => {
           expect(collection).toMatchObject({
@@ -128,7 +230,6 @@ describe("POST /api/users/:username/collections", () => {
       .expect(201)
       .then(({ body }) => {
         const { collection } = body;
-        //console.log(collection);
         expect(collection.uniqueSerialID).toBe("unique-id-456");
         expect(collection.speciesID).toBe(2);
         expect(collection.speciesName).toBe("Tulip");
@@ -157,7 +258,6 @@ describe("POST /api/users/:username/collections", () => {
       .expect(201)
       .then(({ body }) => {
         const { collection } = body;
-        //console.log(collection);
         expect(collection.uniqueSerialID).toBe("unique-id-456");
         expect(collection.speciesID).toBe(2);
         expect(collection.speciesName).toBe("Tulip");
@@ -256,7 +356,6 @@ describe("PATCH /api/users/:username/collections/:collectionId", () => {
       .expect(200)
       .then(({ body }) => {
         const { collection } = body;
-        //console.log(collection);
         expect(collection.speciesName).toBe("Updated Rose");
         expect(collection.matchScore).toBe(99.9);
       });
