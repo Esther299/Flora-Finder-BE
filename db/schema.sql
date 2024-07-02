@@ -1,5 +1,8 @@
+
+
 DROP TABLE IF EXISTS UserCollection;
 DROP TABLE IF EXISTS UserAccount;
+
 
 CREATE TABLE UserAccount (
     username VARCHAR(255) PRIMARY KEY,
@@ -10,6 +13,7 @@ CREATE TABLE UserAccount (
     avatar VARCHAR(255)
 );
 
+-- Create UserCollection table
 CREATE TABLE UserCollection (
     uniqueSerialID VARCHAR(36) PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
