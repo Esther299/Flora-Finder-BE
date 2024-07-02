@@ -2,18 +2,15 @@ const pool = require("../db/connection");
 
 exports.selectUserCollections = async (username) => {
   try {
-    //console.log(`Querying database for collections of user: ${username}`);
     const [rows] = await pool.query(
       "SELECT uniqueSerialID, username, speciesID, speciesName, geoTag, matchScore, dateCollected, image, speciesFamily FROM UserCollection WHERE username = ?",
       [username]
     );
-    //console.log(`Query result: ${JSON.stringify(rows)}`);
     rows.forEach((row) => {
       row.matchScore = Number(row.matchScore);
     });
     return rows;
   } catch (error) {
-    //console.log(`Error querying database: ${error}`);
     throw error;
   }
 };
@@ -97,7 +94,6 @@ exports.insertUserCollection = async (username, newCollection) => {
     rows[0].matchScore = Number(rows[0].matchScore);
     return rows[0];
   } catch (error) {
-    //console.log(`Error inserting collection: ${error}`);
     throw error;
   }
 };
@@ -145,7 +141,6 @@ exports.deleteCollection = async (username, collectionId) => {
     );
     return result.affectedRows > 0;
   } catch (error) {
-    //console.log(`Error deleting collection: ${error}`);
     throw error;
   }
 };
