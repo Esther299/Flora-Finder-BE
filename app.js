@@ -27,8 +27,9 @@ app.get("/api/users/:username", (req, res, next) => {
 });
 
 app.post("/api/users", (req, res, next) => {
-console.log(`POST /api/users/${req.params.username}`);
-addUser(req, res, next);
+  console.log(`POST /api/users/${req.params.username}`);
+  addUser(req, res, next);
+});
 
 app.get("/api/users/:username/collections", (req, res, next) => {
   console.log(`GET /api/users/${req.params.username}/collections`);
@@ -40,15 +41,25 @@ app.post("/api/users/:username/collections", (req, res, next) => {
   addUserCollection(req, res, next);
 });
 
-app.patch("/api/users/:username/collections/:collectionId", (req, res, next) => {
-  console.log(`PATCH /api/users/${req.params.username}/collections/${req.params.collectionId}`);
-  updateUserCollection(req, res, next);
-});
+app.patch(
+  "/api/users/:username/collections/:collectionId",
+  (req, res, next) => {
+    console.log(
+      `PATCH /api/users/${req.params.username}/collections/${req.params.collectionId}`
+    );
+    updateUserCollection(req, res, next);
+  }
+);
 
-app.delete("/api/users/:username/collections/:collectionId", (req, res, next) => {
-  console.log(`DELETE /api/users/${req.params.username}/collections/${req.params.collectionId}`);
-  deleteUserCollection(req, res, next);
-});
+app.delete(
+  "/api/users/:username/collections/:collectionId",
+  (req, res, next) => {
+    console.log(
+      `DELETE /api/users/${req.params.username}/collections/${req.params.collectionId}`
+    );
+    deleteUserCollection(req, res, next);
+  }
+);
 
 app.delete("/api/users/:username", (req, res, next) => {
   console.log(`DELETE /api/users/${req.params.username}`);
