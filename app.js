@@ -2,6 +2,7 @@ const express = require("express");
 const {
   getUsers,
   getUserById,
+  addUser,
   deleteUserByUsername,
 } = require("./controllers/users-controllers");
 const {
@@ -14,8 +15,25 @@ const {
 const app = express();
 app.use(express.json());
 
+<<<<<<< HEAD
 // Log startup
 console.log("Starting server...");
+=======
+app.get("/api/users", getUsers);
+app.get("/api/users/:username", getUserById);
+app.post("/api/users", addUser);
+app.get("/api/users/:username/collections", getUserCollections);
+app.post("/api/users/:username/collections", addUserCollection);
+app.patch(
+  "/api/users/:username/collections/:collectionId",
+  updateUserCollection
+);
+app.delete(
+  "/api/users/:username/collections/:collectionId",
+  deleteUserCollection
+);
+app.delete("/api/users/:username", deleteUserByUsername);
+>>>>>>> d47b9a66e9e615535bd6c3cfe0877ef3cabd20c1
 
 // Define routes with logging
 app.get("/api/users", (req, res, next) => {

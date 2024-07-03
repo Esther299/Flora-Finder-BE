@@ -1,4 +1,5 @@
 
+
 DROP TABLE IF EXISTS UserCollection;
 DROP TABLE IF EXISTS UserAccount;
 
