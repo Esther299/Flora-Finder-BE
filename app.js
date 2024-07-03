@@ -26,6 +26,10 @@ app.get("/api/users/:username", (req, res, next) => {
   getUserById(req, res, next);
 });
 
+app.post("/api/users", (req, res, next) => {
+console.log(`POST /api/users/${req.params.username}`);
+addUser(req, res, next);
+
 app.get("/api/users/:username/collections", (req, res, next) => {
   console.log(`GET /api/users/${req.params.username}/collections`);
   getUserCollections(req, res, next);
@@ -88,4 +92,3 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
-
