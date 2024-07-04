@@ -15,18 +15,19 @@ async function seedDatabase() {
     `;
     const createCollectionsTable = `
       CREATE TABLE IF NOT EXISTS UserCollection (
-        uniqueSerialID VARCHAR(255) PRIMARY KEY,
+        plantId INT AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(255) NOT NULL,
         speciesID INT NOT NULL,
         speciesName VARCHAR(255) NOT NULL,
-        geoTag VARCHAR(255) NOT NULL,
-        matchScore DECIMAL(5, 2) DEFAULT 0,
+        geoTag VARCHAR(255),
+        matchScore DECIMAL(5,2),
         dateCollected TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         image VARCHAR(255) NOT NULL,
         speciesFamily VARCHAR(255) NOT NULL,
         FOREIGN KEY (username) REFERENCES UserAccount(username)
       );
     `;
+    
     await connection.query(createUsersTable);
     await connection.query(createCollectionsTable);
 
@@ -78,20 +79,18 @@ async function seedDatabase() {
     }
 
     const insertCollectionQuery = `
-      INSERT INTO UserCollection (uniqueSerialID, username, speciesID, speciesName, geoTag, matchScore, dateCollected, image, speciesFamily)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO UserCollection (username, speciesID, speciesName, geoTag, matchScore, image, speciesFamily)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE speciesName = VALUES(speciesName), geoTag = VALUES(geoTag), matchScore = VALUES(matchScore), dateCollected = VALUES(dateCollected), image = VALUES(image), speciesFamily = VALUES(speciesFamily);
     `;
 
     for (const collection of seedCollections) {
       await connection.query(insertCollectionQuery, [
-        collection.uniqueSerialID,
         collection.username,
         collection.speciesID,
         collection.speciesName,
         collection.geoTag,
         collection.matchScore,
-        collection.dateCollected,
         collection.image,
         collection.speciesFamily,
       ]);

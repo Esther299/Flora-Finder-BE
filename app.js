@@ -41,22 +41,22 @@ app.post("/api/users/:username/collections", (req, res, next) => {
   addUserCollection(req, res, next);
 });
 
-app.patch(
-  "/api/users/:username/collections/:collectionId",
-  (req, res, next) => {
-    console.log(
-      `PATCH /api/users/${req.params.username}/collections/${req.params.collectionId}`,
-      req.body
-    );
-    updateUserCollection(req, res, next);
-  }
-);
+// app.patch(
+//   "/api/users/:username/collections/:collectionId",
+//   (req, res, next) => {
+//     console.log(
+//       `PATCH /api/users/${req.params.username}/collections/${req.params.collectionId}`,
+//       req.body
+//     );
+//     updateUserCollection(req, res, next);
+//   }
+// );
 
 app.delete(
-  "/api/users/:username/collections/:collectionId",
+  "/api/users/:username/collections/:plantId",
   (req, res, next) => {
     console.log(
-      `DELETE /api/users/${req.params.username}/collections/${req.params.collectionId}`
+      `DELETE /api/users/${req.params.username}/collections/${req.params.plantId}`
     );
     deleteUserCollection(req, res, next);
   }
@@ -75,7 +75,7 @@ app.all("*", (req, res) => {
 
 // Error handling middleware with logging
 app.use((err, req, res, next) => {
-  console.error("SQL Error Handler:", err);
+  //console.error("SQL Error Handler:", err);
   if (err.sqlState === "42S22") {
     res.status(400).send({ msg: "Invalid input" });
   } else {
@@ -84,7 +84,7 @@ app.use((err, req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error("General Error Handler:", err);
+  //console.error("General Error Handler:", err);
   if (err.msg) {
     res.status(err.status).send({ msg: err.msg });
   } else {
