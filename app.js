@@ -27,7 +27,7 @@ app.get("/api/users/:username", (req, res, next) => {
 });
 
 app.post("/api/users", (req, res, next) => {
-  console.log(`POST /api/users/${req.params.username}`);
+  console.log("POST /api/users", req.body);
   addUser(req, res, next);
 });
 
@@ -37,7 +37,7 @@ app.get("/api/users/:username/collections", (req, res, next) => {
 });
 
 app.post("/api/users/:username/collections", (req, res, next) => {
-  console.log(`POST /api/users/${req.params.username}/collections`);
+  console.log(`POST /api/users/${req.params.username}/collections`, req.body);
   addUserCollection(req, res, next);
 });
 
@@ -45,7 +45,8 @@ app.patch(
   "/api/users/:username/collections/:collectionId",
   (req, res, next) => {
     console.log(
-      `PATCH /api/users/${req.params.username}/collections/${req.params.collectionId}`
+      `PATCH /api/users/${req.params.username}/collections/${req.params.collectionId}`,
+      req.body
     );
     updateUserCollection(req, res, next);
   }
