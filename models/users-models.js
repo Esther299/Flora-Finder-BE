@@ -4,20 +4,18 @@ const moment = require("moment");
 exports.selectAllUsers = async (order = "desc") => {
   try {
     const validOrderBy = ["ASC", "DESC"];
-     if (order && !validOrderBy.includes(order.toUpperCase())) {
-       return Promise.reject({
-         status: 400,
-         msg: "Bad query request",
-       });
-     }
+    if (order && !validOrderBy.includes(order.toUpperCase())) {
+      return Promise.reject({
+        status: 400,
+        msg: "Bad query request",
+      });
+    }
     const orderDirection = order.toLowerCase() === "asc" ? "ASC" : "DESC";
     const [rows] = await pool.query(
       `SELECT * FROM UserAccount ORDER BY total_score ${orderDirection};`
     );
     rows.forEach((row) => {
-      row.dateCollected = moment(row.dateCollected).format(
-        "YYYY-MM-DD HH:mm:ss"
-      );
+      row.dateStamp = moment(row.dateStamp).format("YYYY-MM-DD HH:mm:ss");
     });
     return rows;
   } catch (error) {
@@ -34,9 +32,7 @@ exports.selectUserById = async (username) => {
     if (!rows[0]) {
       throw { status: 404, msg: "User not found" };
     }
-    rows[0].dateCollected = moment(rows[0].dateCollected).format(
-      "YYYY-MM-DD HH:mm:ss"
-    );
+    rows[0].dateStamp = moment(rows[0].dateStamp).format("YYYY-MM-DD HH:mm:ss");
     return rows[0];
   } catch (error) {
     throw error;
@@ -87,7 +83,7 @@ exports.createUser = async (newUser) => {
       "SELECT * FROM UserAccount WHERE username = ?",
       [username]
     );
-
+    rows[0].dateStamp = moment(rows[0].dateStamp).format("YYYY-MM-DD HH:mm:ss");
     return rows[0];
   } catch (error) {
     if (error.code === "ER_DUP_ENTRY") {
