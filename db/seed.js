@@ -3,6 +3,8 @@ const pool = require("./connection");
 async function seedDatabase() {
   try {
     const connection = await pool.getConnection();
+    await connection.query("DROP TABLE IF EXISTS UserCollection;");
+    await connection.query("DROP TABLE IF EXISTS UserAccount;");
     const createUsersTable = `
       CREATE TABLE IF NOT EXISTS UserAccount (
         username VARCHAR(255) PRIMARY KEY,
@@ -104,15 +106,15 @@ async function seedDatabase() {
   }
 }
 
-async function deleteDatabase() {
-  try {
-    const connection = await pool.getConnection();
-    await connection.query("DROP TABLE IF EXISTS UserCollection");
-    await connection.query("DROP TABLE IF EXISTS UserAccount");
-    connection.release();
-  } catch (error) {
-    console.error("Error deleting the database:", error);
-  }
-}
+// async function deleteDatabase() {
+//   try {
+//     const connection = await pool.getConnection();
+//     await connection.query("DROP TABLE IF EXISTS UserCollection");
+//     await connection.query("DROP TABLE IF EXISTS UserAccount");
+//     connection.release();
+//   } catch (error) {
+//     console.error("Error deleting the database:", error);
+//   }
+// }
 
-module.exports = { seedDatabase, deleteDatabase };
+module.exports = { seedDatabase };

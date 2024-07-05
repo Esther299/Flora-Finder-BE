@@ -1,4 +1,4 @@
-const seedDatabase = require("./seed.js");
+const {seedDatabase} = require("./seed.js");
 const pool = require("./connection.js");
 
 const runSeed = async () => {
