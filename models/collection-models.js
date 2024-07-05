@@ -1,4 +1,5 @@
 const pool = require("../db/connection");
+const moment = require("moment");
 
 exports.selectUserCollections = async (username) => {
   try {
@@ -8,6 +9,9 @@ exports.selectUserCollections = async (username) => {
     );
     rows.forEach((row) => {
       row.matchScore = Number(row.matchScore);
+      row.dateCollected = moment(row.dateCollected).format(
+        "YYYY-MM-DD HH:mm:ss"
+      );
     });
     return rows;
   } catch (error) {
@@ -76,6 +80,9 @@ exports.insertUserCollection = async (username, newCollection) => {
       "SELECT * FROM UserCollection WHERE plantId = LAST_INSERT_ID()"
     );
     rows[0].matchScore = Number(rows[0].matchScore);
+    rows[0].dateCollected = moment(rows[0].dateCollected).format(
+      "YYYY-MM-DD HH:mm:ss"
+    );
     return rows[0];
   } catch (error) {
     throw error;

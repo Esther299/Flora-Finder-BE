@@ -6,7 +6,6 @@ const {
   checkCollectionExists,
 } = require("../models/collection-models");
 const { checkUserExists } = require("../models/users-models");
-const moment = require("moment");
 
 exports.getUserCollections = (req, res, next) => {
   const { username } = req.params;
@@ -35,9 +34,6 @@ exports.addUserCollection = (req, res, next) => {
       return insertUserCollection(username, newCollection);
     })
     .then((collection) => {
-      collection.dateCollected = moment(collection.dateCollected).format(
-        "YYYY-MM-DD HH:mm:ss"
-      );
       res.status(201).send({ collection });
     })
     .catch((err) => {

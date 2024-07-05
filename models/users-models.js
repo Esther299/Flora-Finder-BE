@@ -1,4 +1,5 @@
 const pool = require("../db/connection");
+const moment = require("moment");
 
 exports.selectAllUsers = async (order = "desc") => {
   try {
@@ -13,6 +14,11 @@ exports.selectAllUsers = async (order = "desc") => {
     const [rows] = await pool.query(
       `SELECT * FROM UserAccount ORDER BY total_score ${orderDirection};`
     );
+    rows.forEach((row) => {
+      row.dateCollected = moment(row.dateCollected).format(
+        "YYYY-MM-DD HH:mm:ss"
+      );
+    });
     return rows;
   } catch (error) {
     throw error;
@@ -28,6 +34,9 @@ exports.selectUserById = async (username) => {
     if (!rows[0]) {
       throw { status: 404, msg: "User not found" };
     }
+    rows[0].dateCollected = moment(rows[0].dateCollected).format(
+      "YYYY-MM-DD HH:mm:ss"
+    );
     return rows[0];
   } catch (error) {
     throw error;
@@ -78,6 +87,7 @@ exports.createUser = async (newUser) => {
       "SELECT * FROM UserAccount WHERE username = ?",
       [username]
     );
+
     return rows[0];
   } catch (error) {
     if (error.code === "ER_DUP_ENTRY") {
