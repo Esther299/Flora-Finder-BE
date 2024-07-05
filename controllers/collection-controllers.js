@@ -61,11 +61,11 @@ exports.addUserCollection = (req, res, next) => {
 // };
 
 exports.deleteUserCollection = (req, res, next) => {
-  const { username, plantId } = req.params;
+  const { username, speciesName } = req.params;
 
-  checkCollectionExists(username, plantId)
+  checkCollectionExists(username, speciesName)
     .then(() => {
-      return deleteCollection(username, plantId);
+      return deleteCollection(username, speciesName);
     })
     .then(() => {
       res.status(204).send();

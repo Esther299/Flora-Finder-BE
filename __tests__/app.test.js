@@ -31,6 +31,7 @@ describe("GET /api/users", () => {
             password: expect.any(String),
             dateStamp: expect.any(String),
             avatar: expect.any(String),
+            total_score: expect.any(Number),
           });
         });
       });
@@ -86,6 +87,7 @@ describe("GET /api/users/:username", () => {
             email: "test1@example.com",
             password: "hash123",
             avatar: "avatar1.png",
+            total_score: 0,
           })
         );
       });
@@ -470,14 +472,14 @@ xdescribe("PATCH /api/users/:username/collections/:collectionId", () => {
 });
 
 describe("DELETE /api/users/:username/collections/:collectionId", () => {
-  test("DELETE:204 deletes a collection for the specified user", () => {
+  test("DELETE:204 deletes a plant for the specified user", () => {
     return request(app)
-      .delete("/api/users/testuser1/collections/1")
+      .delete("/api/users/testuser1/collections/Rose")
       .expect(204);
   });
-  test("DELETE:404 responds with an appropriate status and error message when given a valid but non-existent id", () => {
+  test("DELETE:404 responds with an appropriate status and error message when given a valid but non-existent plant", () => {
     return request(app)
-      .delete("/api/users/testuser1/collections/999")
+      .delete("/api/users/testuser1/collections/not-a-plant")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Plant does not exist");

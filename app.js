@@ -53,10 +53,10 @@ app.post("/api/users/:username/collections", (req, res, next) => {
 // );
 
 app.delete(
-  "/api/users/:username/collections/:plantId",
+  "/api/users/:username/collections/:speciesName",
   (req, res, next) => {
     console.log(
-      `DELETE /api/users/${req.params.username}/collections/${req.params.plantId}`
+      `DELETE /api/users/${req.params.username}/collections/${req.params.speciesName}`
     );
     deleteUserCollection(req, res, next);
   }
@@ -71,6 +71,17 @@ app.delete("/api/users/:username", (req, res, next) => {
 app.all("*", (req, res) => {
   console.log(`404 - Route not found: ${req.method} ${req.originalUrl}`);
   res.status(404).send({ msg: "Route not found" });
+});
+
+// Tables dropping error
+app.use((err, req, res, next) => {
+  //console.error("SQL Error Handler:", err);
+  if (err.sqlState === "42S02") {
+    res
+      .send({ msg: "Table have been dropped or they don't exist" });
+  } else {
+    next(err);
+  }
 });
 
 // Error handling middleware with logging
