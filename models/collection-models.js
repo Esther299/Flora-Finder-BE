@@ -44,7 +44,6 @@ exports.insertUserCollection = async (username, newCollection) => {
     matchScore: "number",
     image: "string",
     speciesFamily: "string",
-    extraProperty: "number",
   };
   for (const key in expectedTypes) {
     if (
