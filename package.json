@@ -14,14 +14,20 @@
   },
   "name": "flora-finder-be",
   "version": "1.0.0",
-  "description": "",
+  "description": "florafinderdb",
   "main": "app.js",
   "scripts": {
     "test": "jest",
     "start": "node app.js",
-"seed": "node ./db/run-seed.js"
+    "seed": "node ./db/run-seed.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "jest": {
+    "setupFilesAfterEnv": [
+      "jest-extended/all",
+      "jest-sorted"
+    ]
+  }
 }

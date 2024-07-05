@@ -15,78 +15,33 @@ const {
 const app = express();
 app.use(express.json());
 
-// Define routes with logging
-app.get("/api/users", (req, res, next) => {
-  console.log("GET /api/users");
-  getUsers(req, res, next);
-});
+// Users:
+app.get("/api/users", getUsers);
+app.get("/api/users/:username", getUserById);
+app.post("/api/users", addUser);
+app.delete("/api/users/:username", deleteUserByUsername);
 
-app.get("/api/users/:username", (req, res, next) => {
-  console.log(`GET /api/users/${req.params.username}`);
-  getUserById(req, res, next);
-});
-
-app.post("/api/users", (req, res, next) => {
-  console.log("POST /api/users", req.body);
-  addUser(req, res, next);
-});
-
-app.get("/api/users/:username/collections", (req, res, next) => {
-  console.log(`GET /api/users/${req.params.username}/collections`);
-  getUserCollections(req, res, next);
-});
-
-app.post("/api/users/:username/collections", (req, res, next) => {
-  console.log(`POST /api/users/${req.params.username}/collections`, req.body);
-  addUserCollection(req, res, next);
-});
-
-// app.patch(
-//   "/api/users/:username/collections/:collectionId",
-//   (req, res, next) => {
-//     console.log(
-//       `PATCH /api/users/${req.params.username}/collections/${req.params.collectionId}`,
-//       req.body
-//     );
-//     updateUserCollection(req, res, next);
-//   }
-// );
-
-app.delete(
-  "/api/users/:username/collections/:speciesName",
-  (req, res, next) => {
-    console.log(
-      `DELETE /api/users/${req.params.username}/collections/${req.params.speciesName}`
-    );
-    deleteUserCollection(req, res, next);
-  }
-);
-
-app.delete("/api/users/:username", (req, res, next) => {
-  console.log(`DELETE /api/users/${req.params.username}`);
-  deleteUserByUsername(req, res, next);
-});
+//Collections:
+app.get("/api/users/:username/collections", getUserCollections);
+app.post("/api/users/:username/collections", addUserCollection);
+app.delete("/api/users/:username/collections/:speciesName", deleteUserCollection);
 
 // Handle unknown routes
 app.all("*", (req, res) => {
-  console.log(`404 - Route not found: ${req.method} ${req.originalUrl}`);
   res.status(404).send({ msg: "Route not found" });
 });
 
 // Tables dropping error
 app.use((err, req, res, next) => {
-  //console.error("SQL Error Handler:", err);
   if (err.sqlState === "42S02") {
     res
-      .send({ msg: "Table have been dropped or they don't exist" });
+      .send({ msg: "Tables have been dropped or they don't exist" });
   } else {
     next(err);
   }
 });
 
-// Error handling middleware with logging
 app.use((err, req, res, next) => {
-  //console.error("SQL Error Handler:", err);
   if (err.sqlState === "42S22") {
     res.status(400).send({ msg: "Invalid input" });
   } else {
@@ -95,7 +50,6 @@ app.use((err, req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  //console.error("General Error Handler:", err);
   if (err.msg) {
     res.status(err.status).send({ msg: err.msg });
   } else {
@@ -105,7 +59,7 @@ app.use((err, req, res, next) => {
 
 app.use((err, req, res, next) => {
   console.error("Unhandled Error:", err);
-  res.status(500).send({ error: "An unexpected error occurred" });
+  res.status(500).send({ msg: "An unexpected error occurred" });
 });
 
 // Start the server and log the port

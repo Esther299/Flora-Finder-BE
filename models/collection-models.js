@@ -56,7 +56,6 @@ exports.insertUserCollection = async (username, newCollection) => {
       });
     }
   }
-
   try {
     const { speciesID, speciesName, geoTag, matchScore, image, speciesFamily } =
       newCollection;
@@ -76,8 +75,6 @@ exports.insertUserCollection = async (username, newCollection) => {
     const [rows] = await pool.query(
       "SELECT * FROM UserCollection WHERE plantId = LAST_INSERT_ID()"
     );
-
-    console.log(rows);
     rows[0].matchScore = Number(rows[0].matchScore);
     return rows[0];
   } catch (error) {
@@ -85,48 +82,12 @@ exports.insertUserCollection = async (username, newCollection) => {
   }
 };
 
-// exports.updateCollection = async (username, collectionId, updates) => {
-//   if ("matchScore" in updates && typeof updates.matchScore !== "number") {
-//     throw { status: 400, msg: "Invalid input" };
-//   }
-//   try {
-//     let result;
-//     if (Object.keys(updates).length > 0) {
-//       const setClause = Object.keys(updates)
-//         .map((key) => `${key} = ?`)
-//         .join(", ");
-//       const values = [...Object.values(updates), username, collectionId];
-
-//       const [updateResult] = await pool.query(
-//         `UPDATE UserCollection SET ${setClause} WHERE username = ? AND uniqueSerialID = ?`,
-//         values
-//       );
-//       result = updateResult;
-//     }
-
-//     const [updatedCollection] = await pool.query(
-//       "SELECT uniqueSerialID, speciesID, speciesName, geoTag, matchScore, dateCollected, image, speciesFamily FROM UserCollection WHERE username = ? AND uniqueSerialID = ?",
-//       [username, collectionId]
-//     );
-
-//     if (updatedCollection.length > 0) {
-//       updatedCollection[0].matchScore = Number(updatedCollection[0].matchScore);
-//       return updatedCollection[0];
-//     } else {
-//       return null;
-//     }
-//   } catch (error) {
-//     throw error;
-//   }
-// };
-
 exports.deleteCollection = async (username, speciesName) => {
   try {
     const [result] = await pool.query(
       "DELETE FROM UserCollection WHERE username = ? AND speciesName = ?",
       [username, speciesName]
     );
-    console.log(result)
     return result.affectedRows > 0;
   } catch (error) {
     throw error;

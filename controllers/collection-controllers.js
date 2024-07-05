@@ -45,21 +45,6 @@ exports.addUserCollection = (req, res, next) => {
     });
 };
 
-// exports.updateUserCollection = (req, res, next) => {
-//   const { username, collectionId } = req.params;
-//   const updates = req.body;
-//   checkCollectionExists(username, collectionId)
-//     .then(() => {
-//       return updateCollection(username, collectionId, updates);
-//     })
-//     .then((collection) => {
-//       res.status(200).send({ collection });
-//     })
-//     .catch((err) => {
-//       next(err);
-//     });
-// };
-
 exports.deleteUserCollection = (req, res, next) => {
   const { username, speciesName } = req.params;
 

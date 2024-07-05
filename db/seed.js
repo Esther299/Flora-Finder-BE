@@ -1,7 +1,6 @@
 const pool = require("./connection");
 
 async function seedDatabase() {
-console.log('Hello')
   try {
     const connection = await pool.getConnection();
     await connection.query("DROP TABLE IF EXISTS UserCollection;");
@@ -100,22 +99,11 @@ console.log('Hello')
       ]);
     }
 
-    //console.log("Database seeding completed successfully!");
+    console.log("Database seeding completed successfully!");
     connection.release();
   } catch (error) {
     console.error("Error seeding the database:", error);
   }
 }
-
-// async function deleteDatabase() {
-//   try {
-//     const connection = await pool.getConnection();
-//     await connection.query("DROP TABLE IF EXISTS UserCollection");
-//     await connection.query("DROP TABLE IF EXISTS UserAccount");
-//     connection.release();
-//   } catch (error) {
-//     console.error("Error deleting the database:", error);
-//   }
-// }
 
 module.exports = { seedDatabase };
