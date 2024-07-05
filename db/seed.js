@@ -1,6 +1,7 @@
 const pool = require("./connection");
 
 async function seedDatabase() {
+console.log('Hello')
   try {
     const connection = await pool.getConnection();
     await connection.query("DROP TABLE IF EXISTS UserCollection;");
