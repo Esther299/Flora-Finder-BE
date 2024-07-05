@@ -1,6 +1,7 @@
 const pool = require("../db/connection");
 const app = require("../app");
 const request = require("supertest");
+require("jest-sorted");
 const { seedDatabase, deleteDatabase } = require("../db/seed");
 
 beforeEach(async () => {
@@ -32,6 +33,41 @@ describe("GET /api/users", () => {
             avatar: expect.any(String),
           });
         });
+      });
+  });
+  test("GET:200 sends an array of users sorted by total_score in descending order by default", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users).toBeSortedBy("total_score", { descending: true });
+      });
+  });
+  test("GET:200 sends an array of users sorted by total_score in ascending order when query param 'order=asc' is passed", () => {
+    return request(app)
+      .get("/api/users?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users).toBeSortedBy("total_score", { ascending: true });
+      });
+  });
+  test("GET:200 sends an array of users sorted by total_score in descending order when query param 'order=desc' is passed", () => {
+    return request(app)
+      .get("/api/users?order=desc")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users).toBeSortedBy("total_score", { descending: true });
+      });
+  });
+  test("GET:400 sends an error message when an invalid order query param is passed", () => {
+    return request(app)
+      .get("/api/users?order=invalid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad query request");
       });
   });
 });
@@ -233,7 +269,7 @@ describe("POST /api/users/:username/collections", () => {
         expect(collection.speciesName).toBe("Tulip");
         expect(collection.geoTag).toBe("geo-tag-2");
         expect(collection.matchScore).toBe(88.5);
-        expect(typeof (collection.dateCollected)).toBe("string");
+        expect(typeof collection.dateCollected).toBe("string");
         expect(collection.image).toBe("image-url-2");
         expect(collection.speciesFamily).toBe("Liliaceae");
       });
@@ -445,14 +481,6 @@ describe("DELETE /api/users/:username/collections/:collectionId", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Plant does not exist");
-      });
-  });
-  xtest("DELETE:400 responds with an appropriate status and error message when given an invalid id", () => {
-    return request(app)
-      .delete("/api/users/testuser1/collections/not-an-id-number")
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid input");
       });
   });
 });

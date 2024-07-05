@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS UserAccount (
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     dateStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    avatar VARCHAR(255)
+    avatar VARCHAR(255),
+    total_score INT DEFAULT 0
 );
 
 -- Create UserCollection table

@@ -1,9 +1,17 @@
 const pool = require("../db/connection");
 
-exports.selectAllUsers = async () => {
+exports.selectAllUsers = async (order = "desc") => {
   try {
+    const validOrderBy = ["ASC", "DESC"];
+     if (order && !validOrderBy.includes(order.toUpperCase())) {
+       return Promise.reject({
+         status: 400,
+         msg: "Bad query request",
+       });
+     }
+    const orderDirection = order.toLowerCase() === "asc" ? "ASC" : "DESC";
     const [rows] = await pool.query(
-      "SELECT username, name, email, password, dateStamp, avatar FROM UserAccount;"
+      `SELECT * FROM UserAccount ORDER BY total_score ${orderDirection};`
     );
     return rows;
   } catch (error) {
@@ -14,7 +22,7 @@ exports.selectAllUsers = async () => {
 exports.selectUserById = async (username) => {
   try {
     const [rows] = await pool.query(
-      "SELECT username, name, email, password, dateStamp, avatar FROM UserAccount WHERE username = ?",
+      "SELECT * FROM UserAccount WHERE username = ?",
       [username]
     );
     if (!rows[0]) {
@@ -85,7 +93,7 @@ exports.createUser = async (newUser) => {
 exports.checkUserExists = async (username) => {
   try {
     const [rows] = await pool.query(
-      "SELECT username, name, email, password, dateStamp, avatar FROM UserAccount WHERE username = ?",
+      "SELECT * FROM UserAccount WHERE username = ?",
       [username]
     );
     if (!rows[0]) {
@@ -101,6 +109,7 @@ exports.checkUserExists = async (username) => {
     throw error;
   }
 };
+
 exports.deleteUser = async (username) => {
   try {
     await pool.query("START TRANSACTION");
