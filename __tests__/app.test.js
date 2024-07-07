@@ -3,6 +3,7 @@ const app = require("../app");
 const request = require("supertest");
 require("jest-sorted");
 const { seedDatabase } = require("../db/seed");
+const endpointsFile = require("../endpoint.json");
 
 beforeEach(async () => {
   await seedDatabase();
@@ -10,6 +11,18 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await pool.end();
+});
+
+describe("GET api", () => {
+  test("GET:200 sends an object describing all the available endpoints on your API", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        const { endpointsData } = body;
+        expect(endpointsData).toEqual(endpointsFile);
+      });
+  });
 });
 
 describe("GET /api/users", () => {

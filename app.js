@@ -13,9 +13,12 @@ const {
   deleteUserCollection,
 } = require("./controllers/collection-controllers");
 const { verifyToken } = require("./controllers/verify-tolken-middleware");
+const { getEndpoints } = require("./controllers/api-controller");
 
 const app = express();
 app.use(express.json());
+
+app.get("/api", getEndpoints);
 
 // Users:
 app.get("/api/users", getUsers);
