@@ -2,9 +2,10 @@ const express = require("express");
 const {
   getUsers,
   getUserById,
-  addUser,
+  postUser,
   deleteUserByUsername,
   authenticateUser,
+  patchUserByUsername,
 } = require("./controllers/users-controllers");
 const {
   getUserCollections,
@@ -19,9 +20,10 @@ app.use(express.json());
 // Users:
 app.get("/api/users", getUsers);
 app.get("/api/users/:username", getUserById);
-app.post("/api/users", addUser);
+app.post("/api/users", postUser);
 app.delete("/api/users/:username", deleteUserByUsername);
 app.post("/api/users/login", authenticateUser);
+app.patch("/api/users/:username", patchUserByUsername);
 
 app.get("/api/protected", verifyToken, (req, res) => {
   res.send("This is a protected route");

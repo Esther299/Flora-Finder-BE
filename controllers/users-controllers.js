@@ -3,6 +3,7 @@ const {
   selectUserById,
   createUser,
   deleteUser,
+  updateUser,
   checkUserExists,
   loginUser,
 } = require("../models/users-models");
@@ -32,7 +33,7 @@ exports.getUserById = (req, res, next) => {
     });
 };
 
-exports.addUser = (req, res, next) => {
+exports.postUser = (req, res, next) => {
   const newUser = req.body;
   return createUser(newUser)
     .then((user) => {
@@ -56,6 +57,22 @@ exports.deleteUserByUsername = (req, res, next) => {
       next(err);
     });
 };
+
+exports.patchUserByUsername = (req, res, next) => {
+  const { username } = req.params;
+  const update = req.body;
+  checkUserExists(username)
+    .then(() => {
+      return updateUser(username, update);
+    })
+    .then((user) => {
+      res.status(200).send({ user });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
 
 exports.authenticateUser = (req, res, next) => {
   const credentials = req.body;

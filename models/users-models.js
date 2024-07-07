@@ -71,37 +71,37 @@ exports.createUser = async (newUser) => {
       });
     }
   }
- try {
-   const hashedPassword = await bcrypt.hash(password, 10);
-   const sql = `
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const sql = `
       INSERT INTO UserAccount (username, name, email, password, avatar)
       VALUES (?, ?, ?, ?, ?)
     `;
-   const defaultAvatar =
-     "https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2247726673.jpg";
+    const defaultAvatar =
+      "https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2247726673.jpg";
 
-   const [result] = await pool.query(sql, [
-     username,
-     name,
-     email,
-     hashedPassword,
-     defaultAvatar,
-   ]);
-   const [rows] = await pool.query(
-     "SELECT * FROM UserAccount WHERE username = ?",
-     [username]
-   );
-   rows[0].dateStamp = moment(rows[0].dateStamp).format("YYYY-MM-DD HH:mm:ss");
-   return rows[0];
- } catch (error) {
-   if (error.code === "ER_DUP_ENTRY") {
-     return Promise.reject({
-       status: 400,
-       msg: "User already exists",
-     });
-   }
-   throw error;
- }
+    const [result] = await pool.query(sql, [
+      username,
+      name,
+      email,
+      hashedPassword,
+      defaultAvatar,
+    ]);
+    const [rows] = await pool.query(
+      "SELECT * FROM UserAccount WHERE username = ?",
+      [username]
+    );
+    rows[0].dateStamp = moment(rows[0].dateStamp).format("YYYY-MM-DD HH:mm:ss");
+    return rows[0];
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return Promise.reject({
+        status: 400,
+        msg: "User already exists",
+      });
+    }
+    throw error;
+  }
 };
 
 exports.checkUserExists = async (username) => {
@@ -141,6 +141,44 @@ exports.deleteUser = async (username) => {
     return result.affectedRows > 0;
   } catch (error) {
     await pool.query("ROLLBACK");
+    throw error;
+  }
+};
+
+exports.updateUser = async (username, update) => {
+  try {
+    if ("total_score" in update && typeof update.total_score !== "number") {
+      return Promise.reject({
+        status: 400,
+        msg: "Invalid input",
+      });
+    }
+    if ("avatar" in update && typeof update.avatar !== "string") {
+      return Promise.reject({
+        status: 400,
+        msg: "Invalid input",
+      });
+    }
+    if (Object.keys(update).length > 0) {
+      const setClause = Object.keys(update)
+      .map((key) => `${key} = ?`)
+      .join(", ");
+    const values = Object.values(update);
+    values.push(username);
+    const [updateResult] = await pool.query(
+      `UPDATE UserAccount SET ${setClause} WHERE username = ?`,
+      values
+    );
+    }
+    
+    const [updatedUser] = await pool.query(
+      "SELECT * FROM UserAccount WHERE username = ?",
+      [username]
+    );
+
+    updatedUser[0].total_score = Number(updatedUser[0].total_score);
+    return updatedUser[0];
+  } catch (error) {
     throw error;
   }
 };

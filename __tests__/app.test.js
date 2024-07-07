@@ -407,6 +407,117 @@ describe("DELETE /api/users/:username/collections/:collectionId", () => {
   });
 });
 
+describe("PATCH /api/users/:username", () => {
+  test("PATCH:200 updates the avatar and total_score for the specified user", () => {
+    const update = {
+      avatar:
+        "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953",
+      total_score: 20,
+    };
+    return request(app)
+      .patch("/api/users/testuser1")
+      .send(update)
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user.avatar).toBe(
+          "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953"
+        );
+        expect(user.total_score).toBe(20);
+      });
+  });
+  test("PATCH:200 updates only the avatar for the specified user", () => {
+    const update = {
+      avatar:
+        "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953",
+    };
+    return request(app)
+      .patch("/api/users/testuser1")
+      .send(update)
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user.avatar).toBe(
+          "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953"
+        );
+      });
+  });
+  test("PATCH:200 updates only the total_score for the specified user", () => {
+    const update = {
+      total_score: 20,
+    };
+    return request(app)
+      .patch("/api/users/testuser1")
+      .send(update)
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user.total_score).toBe(20);
+      });
+  });
+  test("PATCH:200 does not update any properties if the request body is empty", () => {
+    return request(app)
+      .patch("/api/users/testuser1")
+      .send({})
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user.avatar).toBe("avatar1.png");
+        expect(user.total_score).toBe(0);
+      });
+  });
+  test("PATCH:400 sends an appropriate status and error message when the provided update properties are incorrect", () => {
+    const update = {
+      unknownProperty: "Invalid Value",
+    };
+    return request(app)
+      .patch("/api/users/testuser1")
+      .send(update)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid input");
+      });
+  });
+  test("PATCH:400 sends an appropriate status and error message when the provided total_score value is incorrect", () => {
+    const update = {
+      total_score: "banana",
+    };
+    return request(app)
+      .patch("/api/users/testuser1")
+      .send(update)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid input");
+      });
+  });
+  test("PATCH:400 sends an appropriate status and error message when the provided avatar value is incorrect", () => {
+    const update = {
+      avatar: 2,
+    };
+    return request(app)
+      .patch("/api/users/testuser1")
+      .send(update)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid input");
+      });
+  });
+  test("PATCH:404 sends an appropriate status and error message when given a non-existent user", () => {
+    const update = {
+      avatar:
+        "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953",
+      total_score: 20,
+    };
+    return request(app)
+      .patch("/api/users/not-a-user")
+      .send(update)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User not found");
+      });
+  });
+});
+
 describe("Authentication Endpoints", () => {
   let token;
 
