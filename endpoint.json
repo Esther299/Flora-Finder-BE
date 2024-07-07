@@ -1,0 +1,200 @@
+{
+  "/api/users": {
+    "GET": {
+      "description": "Retrieve an array of users with specified properties",
+      "response": {
+        "status": 200,
+        "body": {
+          "users": [
+            {
+              "username": "string",
+              "name": "string",
+              "email": "string",
+              "password": "string (hashed)",
+              "dateStamp": "string",
+              "avatar": "string",
+              "total_score": "number"
+            },
+             {
+              "username": "string",
+              "name": "string",
+              "email": "string",
+              "password": "string (hashed)",
+              "dateStamp": "string",
+              "avatar": "string",
+              "total_score": "number"
+            }
+          ]
+        }
+      }
+    },
+    "POST": {
+      "description": "Create a new user",
+      "request_body": {
+        "username": "string",
+        "name": "string",
+        "email": "string",
+        "password": "string"
+      },
+      "response": {
+        "status": 201,
+        "body": {
+          "user": {
+            "username": "string",
+            "name": "string",
+            "email": "string",
+            "password": "string (hashed)",
+            "avatar": "string (default avatar)",
+            "total_score": 0
+          }
+        }
+      }
+    }
+  },
+  "/api/users/:username": {
+    "GET": {
+      "description": "Retrieve a single user by username",
+      "response": {
+        "status": 200,
+        "body": {
+          "user": {
+            "username": "string",
+            "name": "string",
+            "email": "string",
+            "password": "string (hashed)",
+            "dateStamp": "string",
+            "avatar": "string",
+            "total_score": "number"
+          }
+        }
+      }
+    },
+    "PATCH": {
+      "description": "Update user properties (avatar, total_score)",
+      "request_body": {
+        "avatar": "string",
+        "total_score": "number"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "user": {
+            "username": "string",
+            "name": "string",
+            "email": "string",
+            "password": "string (hashed)",
+            "dateStamp": "string",
+            "avatar": "string",
+            "total_score": "number"
+          }
+        }
+      }
+    },
+    "DELETE": {
+      "description": "Delete a user by username",
+      "response": {
+        "status": 204
+      }
+    }
+  },
+  "/api/users/:username/collections": {
+    "GET": {
+      "description": "Retrieve collections for a specific user",
+      "response": {
+        "status": 200,
+        "body": {
+          "collections": [
+            {
+              "plantId": "number",
+              "username": "string",
+              "speciesID": "number",
+              "speciesName": "string",
+              "geoTag": "string",
+              "matchScore": "number",
+              "dateCollected": "string",
+              "image": "string",
+              "speciesFamily": "string"
+            },
+            {
+              "plantId": "number",
+              "username": "string",
+              "speciesID": "number",
+              "speciesName": "string",
+              "geoTag": "string",
+              "matchScore": "number",
+              "dateCollected": "string",
+              "image": "string",
+              "speciesFamily": "string"
+            }
+          ]
+        }
+      }
+    },
+    "POST": {
+      "description": "Add a new collection for a specific user",
+      "request_body": {
+        "speciesID": "number",
+        "speciesName": "string",
+        "geoTag": "string",
+        "matchScore": "number",
+        "image": "string",
+        "speciesFamily": "string"
+      },
+      "response": {
+        "status": 201,
+        "body": {
+          "collection": {
+            "plantId": "number",
+            "speciesID": "number",
+            "speciesName": "string",
+            "geoTag": "string",
+            "matchScore": "number",
+            "dateCollected": "string (auto-generated)",
+            "image": "string",
+            "speciesFamily": "string"
+          }
+        }
+      }
+    }
+  },
+  "/api/users/:username/collections/:collectionId": {
+    "DELETE": {
+      "description": "Delete a collection (plant) for a specific user",
+      "response": {
+        "status": 204
+      }
+    }
+  },
+  "/api/users/login": {
+    "POST": {
+      "description": "User login endpoint",
+      "request_body": {
+        "username": "string",
+        "password": "string"
+      },
+      "response": {
+        "status": 200,
+        "body": {
+          "token": "string (JWT token)",
+          "user": {
+            "username": "string",
+            "name": "string",
+            "email": "string",
+            "password": "string (hashed)",
+            "avatar": "string (default avatar)",
+            "total_score": 0
+          }
+        }
+      }
+    }
+  },
+  "/api/protected": {
+    "GET": {
+      "description": "Protected route accessible only with valid JWT token",
+      "response": {
+        "status": 200,
+        "body": "This is a protected route"
+      }
+    }
+  }
+}
