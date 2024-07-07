@@ -1,7 +1,6 @@
 const {
   selectUserCollections,
   insertUserCollection,
-  updateCollection,
   deleteCollection,
   checkCollectionExists,
 } = require("../models/collection-models");
