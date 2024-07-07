@@ -1,4 +1,5 @@
 const pool = require("./connection");
+const bcrypt = require("bcrypt");
 
 async function seedDatabase() {
   try {
@@ -39,14 +40,14 @@ async function seedDatabase() {
         username: "testuser1",
         name: "Test User 1",
         email: "test1@example.com",
-        password: "hash123",
+        password: bcrypt.hashSync("password123", 10),
         avatar: "avatar1.png",
       },
       {
         username: "testuser2",
         name: "Test User 2",
         email: "test2@example.com",
-        password: "hash456",
+        password: bcrypt.hashSync("password456", 10),
         avatar: "avatar2.png",
       },
     ];

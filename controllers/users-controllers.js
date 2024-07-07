@@ -4,6 +4,7 @@ const {
   createUser,
   deleteUser,
   checkUserExists,
+  loginUser,
 } = require("../models/users-models");
 
 exports.getUsers = (req, res, next) => {
@@ -50,6 +51,17 @@ exports.deleteUserByUsername = (req, res, next) => {
     })
     .then(() => {
       res.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.authenticateUser = (req, res, next) => {
+  const credentials = req.body;
+  loginUser(credentials)
+    .then(({ token, user }) => {
+      return res.status(200).json({ token, user });
     })
     .catch((err) => {
       next(err);
