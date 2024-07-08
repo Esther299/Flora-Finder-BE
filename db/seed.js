@@ -83,7 +83,8 @@ async function seedDatabase() {
         speciesName: "Rose",
         geoTag: "geo-tag-1",
         matchScore: "0.23",
-        image: "https://example.com/plant-image-1.jpg",
+        image:
+          "https://upload.wikimedia.org/wikipedia/commons/1/1f/A_close-up_of_climbing_roses.jpg",
         speciesFamily: "Rosaceae",
       },
       {
@@ -92,7 +93,8 @@ async function seedDatabase() {
         speciesName: "Tulip",
         geoTag: "geo-tag-2",
         matchScore: "0.67",
-        image: "https://example.com/plant-image-2.jpg",
+        image:
+          "https://upload.wikimedia.org/wikipedia/commons/c/c4/Tulipa_orphanidea_060506.jpg",
         speciesFamily: "Liliaceae",
       },
       {
@@ -101,7 +103,8 @@ async function seedDatabase() {
         speciesName: "Sunflower",
         geoTag: "geo-tag-3",
         matchScore: "0.45",
-        image: "https://example.com/plant-image-3.jpg",
+        image:
+          "https://upload.wikimedia.org/wikipedia/commons/4/40/Sunflower_sky_backdrop.jpg",
         speciesFamily: "Asteraceae",
       },
       {
@@ -110,7 +113,8 @@ async function seedDatabase() {
         speciesName: "Daffodil",
         geoTag: "geo-tag-4",
         matchScore: "0.12",
-        image: "https://example.com/plant-image-4.jpg",
+        image:
+          "https://upload.wikimedia.org/wikipedia/commons/9/96/A_Perfect_Pair_Daffodills_%28Narcissus%29_-_8.jpg",
         speciesFamily: "Amaryllidaceae",
       },
       {
@@ -119,7 +123,8 @@ async function seedDatabase() {
         speciesName: "Lily",
         geoTag: "geo-tag-5",
         matchScore: "0.65",
-        image: "https://example.com/plant-image-5.jpg",
+        image:
+          "https://upload.wikimedia.org/wikipedia/commons/e/e7/Lilium_Golden_Splendour3.jpg",
         speciesFamily: "Liliaceae",
       },
     ];
