@@ -14,8 +14,10 @@ const {
 } = require("./controllers/collection-controllers");
 const { verifyToken } = require("./controllers/verify-tolken-middleware");
 const { getEndpoints } = require("./controllers/api-controller");
+const cors = require('cors');
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 app.get("/api", getEndpoints);
