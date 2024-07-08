@@ -31,38 +31,96 @@ async function seedDatabase() {
         FOREIGN KEY (username) REFERENCES UserAccount(username)
       );
     `;
-    
+
     await connection.query(createUsersTable);
     await connection.query(createCollectionsTable);
 
     const seedUsers = [
       {
-        username: "testuser1",
-        name: "Test User 1",
-        email: "test1@example.com",
-        password: bcrypt.hashSync("password123", 10),
-        avatar: "avatar1.png",
+        username: "Yusha",
+        name: "Yusha Rooshenas",
+        email: "yusha@hotmail.com",
+        password: bcrypt.hashSync("FloraSquad5", 10),
+        avatar: "https://upload.wikimedia.org/wikipedia/en/5/53/Scooby-Doo.png",
       },
       {
-        username: "testuser2",
-        name: "Test User 2",
-        email: "test2@example.com",
-        password: bcrypt.hashSync("password456", 10),
-        avatar: "avatar2.png",
+        username: "James",
+        name: "James Wallace",
+        email: "james@gmail.com",
+        password: bcrypt.hashSync("FloraSquad5", 10),
+        avatar:
+          "https://upload.wikimedia.org/wikipedia/en/8/87/ShaggyRogers.png",
+      },
+      {
+        username: "Esther",
+        name: "Esther Gines",
+        email: "esther@yahoo.com",
+        password: bcrypt.hashSync("FloraSquad5", 10),
+        avatar:
+          "https://upload.wikimedia.org/wikipedia/en/9/9d/Velma_Dinkley.png",
+      },
+      {
+        username: "Alex",
+        name: "Alex Hughes",
+        email: "alex@googlemail.com",
+        password: bcrypt.hashSync("FloraSquad5", 10),
+        avatar: "https://upload.wikimedia.org/wikipedia/en/4/47/Fred_Jones.png",
+      },
+      {
+        username: "Kate",
+        name: "Kate Blacklock",
+        email: "kate@xataka.com",
+        password: bcrypt.hashSync("FloraSquad5", 10),
+        avatar:
+          "https://upload.wikimedia.org/wikipedia/en/1/1d/Daphne_Blake.png",
       },
     ];
 
     const seedCollections = [
       {
-        uniqueSerialID: "unique-id-123",
-        username: "testuser1",
+        username: "Yusha",
         speciesID: 1,
         speciesName: "Rose",
         geoTag: "geo-tag-1",
-        matchScore: 98.5,
-        dateCollected: "2024-07-01 19:10:26",
-        image: "image-url",
+        matchScore: "0.23",
+        image: "https://example.com/plant-image-1.jpg",
         speciesFamily: "Rosaceae",
+      },
+      {
+        username: "James",
+        speciesID: 2,
+        speciesName: "Tulip",
+        geoTag: "geo-tag-2",
+        matchScore: "0.67",
+        image: "https://example.com/plant-image-2.jpg",
+        speciesFamily: "Liliaceae",
+      },
+      {
+        username: "Esther",
+        speciesID: 3,
+        speciesName: "Sunflower",
+        geoTag: "geo-tag-3",
+        matchScore: "0.45",
+        image: "https://example.com/plant-image-3.jpg",
+        speciesFamily: "Asteraceae",
+      },
+      {
+        username: "Alex",
+        speciesID: 4,
+        speciesName: "Daffodil",
+        geoTag: "geo-tag-4",
+        matchScore: "0.12",
+        image: "https://example.com/plant-image-4.jpg",
+        speciesFamily: "Amaryllidaceae",
+      },
+      {
+        username: "Kate",
+        speciesID: 5,
+        speciesName: "Lily",
+        geoTag: "geo-tag-5",
+        matchScore: "0.65",
+        image: "https://example.com/plant-image-5.jpg",
+        speciesFamily: "Liliaceae",
       },
     ];
 
