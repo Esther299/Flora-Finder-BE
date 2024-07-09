@@ -77,7 +77,8 @@ exports.insertUserCollection = async (username, newCollection) => {
       ]
     );
     const [rows] = await pool.query(
-      "SELECT * FROM UserCollection WHERE plantId = LAST_INSERT_ID()"
+      "SELECT *, (SELECT COALESCE(SUM(matchScore), 0) FROM UserCollection WHERE username = ?) AS total_score FROM UserCollection WHERE plantId = LAST_INSERT_ID()",
+      [username]
     );
     rows[0].matchScore = Number(rows[0].matchScore);
     rows[0].dateCollected = moment(rows[0].dateCollected).format(
@@ -95,8 +96,26 @@ exports.deleteCollection = async (username, plantId) => {
       "DELETE FROM UserCollection WHERE username = ? AND plantId = ?",
       [username, plantId]
     );
-    return result.affectedRows > 0;
+    await updateTotalScore(username);
+    return true;
   } catch (error) {
     throw error;
   }
 };
+
+async function updateTotalScore(username) {
+  try {
+    const [rows] = await pool.query(
+      "SELECT COALESCE(SUM(matchScore), 0) AS totalScore FROM UserCollection WHERE username = ?",
+      [username]
+    );
+    const totalScore = rows[0].totalScore || 0;
+
+    await pool.query(
+      "UPDATE UserAccount SET total_score = ? WHERE username = ?",
+      [totalScore, username]
+    );
+  } catch (error) {
+    throw error;
+  }
+}

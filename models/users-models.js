@@ -18,12 +18,21 @@ exports.selectAllUsers = async (order = "desc") => {
       });
     }
     const orderDirection = order.toLowerCase() === "asc" ? "ASC" : "DESC";
-    const [rows] = await pool.query(
-      `SELECT * FROM UserAccount ORDER BY total_score ${orderDirection};`
-    );
+    const query = `
+      SELECT ua.*, COALESCE(SUM(uc.matchScore), 0) AS total_score
+      FROM UserAccount ua
+      LEFT JOIN UserCollection uc ON ua.username = uc.username
+      GROUP BY ua.username
+      ORDER BY total_score ${orderDirection};
+    `;
+
+    const [rows] = await pool.query(query);
+
     rows.forEach((row) => {
       row.dateStamp = moment(row.dateStamp).format("YYYY-MM-DD HH:mm:ss");
+      row.total_score = Number(row.total_score);
     });
+
     return rows;
   } catch (error) {
     throw error;
@@ -33,12 +42,13 @@ exports.selectAllUsers = async (order = "desc") => {
 exports.selectUserById = async (username) => {
   try {
     const [rows] = await pool.query(
-      "SELECT * FROM UserAccount WHERE username = ?",
-      [username]
+      "SELECT *, (SELECT COALESCE(SUM(matchScore), 0) FROM UserCollection WHERE username = ?) AS total_score FROM UserAccount WHERE username = ?",
+      [username, username]
     );
     if (!rows[0]) {
       throw { status: 404, msg: "User not found" };
     }
+    rows[0].total_score = Number(rows[0].total_score);
     rows[0].dateStamp = moment(rows[0].dateStamp).format("YYYY-MM-DD HH:mm:ss");
     return rows[0];
   } catch (error) {
