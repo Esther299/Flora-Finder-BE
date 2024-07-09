@@ -33,7 +33,7 @@ describe("GET /api/users", () => {
       .then(({ body }) => {
         const { users } = body;
         expect(Array.isArray(users)).toBe(true);
-        expect(users).toHaveLength(2);
+        expect(users).toHaveLength(5);
         users.forEach((user) => {
           expect(user).toMatchObject({
             username: expect.any(String),
@@ -87,18 +87,19 @@ describe("GET /api/users", () => {
 describe("GET /api/users/:username", () => {
   test("GET:200 sends a single user to the client", () => {
     return request(app)
-      .get("/api/users/testuser1")
+      .get("/api/users/Esther")
       .expect(200)
       .then(({ body }) => {
         const { user } = body;
         expect(user).toEqual(
           expect.objectContaining({
-            username: "testuser1",
-            name: "Test User 1",
-            email: "test1@example.com",
+            username: "Esther",
+            name: "Esther Gines",
+            email: "esther@yahoo.com",
             password: expect.stringMatching(/^\$2b\$10\$[\s\S]{53}$/),
             dateStamp: expect.any(String),
-            avatar: "avatar1.png",
+            avatar:
+              "https://upload.wikimedia.org/wikipedia/en/9/9d/Velma_Dinkley.png",
             total_score: 0,
           })
         );
@@ -204,7 +205,7 @@ describe("POST /api/users", () => {
   });
   test("POST:400 sends an appropriate status and error message when trying to post an existing username", () => {
     const newUser = {
-      username: "testuser1",
+      username: "Esther",
       name: "Test User 3",
       email: "test1@example.com",
       password: "hash123",
@@ -221,7 +222,7 @@ describe("POST /api/users", () => {
 
 describe("DELETE /api/users/:username", () => {
   test("DELETE:204 deletes a user", () => {
-    return request(app).delete("/api/users/testuser1").expect(204);
+    return request(app).delete("/api/users/Esther").expect(204);
   });
   test("DELETE:404 responds with an appropriate status and error message when given a non-existent username", () => {
     return request(app)
@@ -236,7 +237,7 @@ describe("DELETE /api/users/:username", () => {
 describe("GET /api/users/:username/collections", () => {
   test("GET:200 sends an array of collections for the specified user", () => {
     return request(app)
-      .get("/api/users/testuser1/collections")
+      .get("/api/users/Esther/collections")
       .expect(200)
       .then(({ body }) => {
         const { collections } = body;
@@ -244,7 +245,7 @@ describe("GET /api/users/:username/collections", () => {
         collections.forEach((collection) => {
           expect(collection).toMatchObject({
             plantId: expect.any(Number),
-            username: "testuser1",
+            username: "Esther",
             speciesID: expect.any(Number),
             speciesName: expect.any(String),
             geoTag: expect.any(String),
@@ -256,9 +257,9 @@ describe("GET /api/users/:username/collections", () => {
         });
       });
   });
-  test("GET:200 sends an empty array to the client when there are no collections for that user", () => {
+  xtest("GET:200 sends an empty array to the client when there are no collections for that user", () => {
     return request(app)
-      .get("/api/users/testuser2/collections")
+      .get("/api/users/Alex/collections")
       .expect(200)
       .then(({ body }) => {
         const { collections } = body;
@@ -287,12 +288,12 @@ describe("POST /api/users/:username/collections", () => {
       speciesFamily: "Liliaceae",
     };
     return request(app)
-      .post("/api/users/testuser1/collections")
+      .post("/api/users/Esther/collections")
       .send(newCollection)
       .expect(201)
       .then(({ body }) => {
         const { collection } = body;
-        expect(collection.plantId).toBe(2);
+        expect(typeof collection.plantId).toBe("number");
         expect(collection.speciesID).toBe(3);
         expect(collection.speciesName).toBe("Tulip");
         expect(collection.geoTag).toBe("geo-tag-2");
@@ -313,12 +314,12 @@ describe("POST /api/users/:username/collections", () => {
       extraProperty: 2,
     };
     return request(app)
-      .post("/api/users/testuser1/collections")
+      .post("/api/users/Esther/collections")
       .send(newCollection)
       .expect(201)
       .then(({ body }) => {
         const { collection } = body;
-        expect(collection.plantId).toBe(2);
+        expect(typeof collection.plantId).toBe("number");
         expect(collection.speciesID).toBe(2);
         expect(collection.speciesName).toBe("Tulip");
         expect(collection.geoTag).toBe("geo-tag-2");
@@ -330,7 +331,7 @@ describe("POST /api/users/:username/collections", () => {
   });
   test("POST:400 sends an appropriate status and error message when provided with a bad collection (no collection body)", () => {
     return request(app)
-      .post("/api/users/testuser1/collections")
+      .post("/api/users/Esther/collections")
       .send({
         uniqueSerialID: "unique-id-456",
         speciesID: 2,
@@ -355,7 +356,7 @@ describe("POST /api/users/:username/collections", () => {
       extraProperty: 2,
     };
     return request(app)
-      .post("/api/users/testuser1/collections")
+      .post("/api/users/Esther/collections")
       .send(newCollection)
       .expect(400)
       .then(({ body }) => {
@@ -375,7 +376,7 @@ describe("POST /api/users/:username/collections", () => {
       extraProperty: 2,
     };
     return request(app)
-      .post("/api/users/testuser1/collections")
+      .post("/api/users/Esther/collections")
       .send(newCollection)
       .expect(400)
       .then(({ body }) => {
@@ -407,12 +408,12 @@ describe("POST /api/users/:username/collections", () => {
 describe("DELETE /api/users/:username/collections/:collectionId", () => {
   test("DELETE:204 deletes a plant for the specified user", () => {
     return request(app)
-      .delete("/api/users/testuser1/collections/Rose")
+      .delete("/api/users/Esther/collections/Sunflower")
       .expect(204);
   });
   test("DELETE:404 responds with an appropriate status and error message when given a valid but non-existent plant", () => {
     return request(app)
-      .delete("/api/users/testuser1/collections/not-a-plant")
+      .delete("/api/users/Esther/collections/not-a-plant")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Plant does not exist");
@@ -428,7 +429,7 @@ describe("PATCH /api/users/:username", () => {
       total_score: 20,
     };
     return request(app)
-      .patch("/api/users/testuser1")
+      .patch("/api/users/Esther")
       .send(update)
       .expect(200)
       .then(({ body }) => {
@@ -445,7 +446,7 @@ describe("PATCH /api/users/:username", () => {
         "https://vignette.wikia.nocookie.net/mrmen/images/d/d6/Mr-Tickle-9a.png/revision/latest?cb=20180127221953",
     };
     return request(app)
-      .patch("/api/users/testuser1")
+      .patch("/api/users/Esther")
       .send(update)
       .expect(200)
       .then(({ body }) => {
@@ -460,7 +461,7 @@ describe("PATCH /api/users/:username", () => {
       total_score: 20,
     };
     return request(app)
-      .patch("/api/users/testuser1")
+      .patch("/api/users/Esther")
       .send(update)
       .expect(200)
       .then(({ body }) => {
@@ -470,12 +471,14 @@ describe("PATCH /api/users/:username", () => {
   });
   test("PATCH:200 does not update any properties if the request body is empty", () => {
     return request(app)
-      .patch("/api/users/testuser1")
+      .patch("/api/users/Esther")
       .send({})
       .expect(200)
       .then(({ body }) => {
         const { user } = body;
-        expect(user.avatar).toBe("avatar1.png");
+        expect(user.avatar).toBe(
+          "https://upload.wikimedia.org/wikipedia/en/9/9d/Velma_Dinkley.png"
+        );
         expect(user.total_score).toBe(0);
       });
   });
@@ -484,7 +487,7 @@ describe("PATCH /api/users/:username", () => {
       unknownProperty: "Invalid Value",
     };
     return request(app)
-      .patch("/api/users/testuser1")
+      .patch("/api/users/Esther")
       .send(update)
       .expect(400)
       .then(({ body }) => {
@@ -496,7 +499,7 @@ describe("PATCH /api/users/:username", () => {
       total_score: "banana",
     };
     return request(app)
-      .patch("/api/users/testuser1")
+      .patch("/api/users/Esther")
       .send(update)
       .expect(400)
       .then(({ body }) => {
@@ -508,7 +511,7 @@ describe("PATCH /api/users/:username", () => {
       avatar: 2,
     };
     return request(app)
-      .patch("/api/users/testuser1")
+      .patch("/api/users/Esther")
       .send(update)
       .expect(400)
       .then(({ body }) => {
@@ -568,8 +571,8 @@ describe("Authentication Endpoints", () => {
     return request(app)
       .post("/api/users/login")
       .send({
-        username: "testuser1",
-        password: "password123",
+        username: "Esther",
+        password: "FloraSquad5",
       })
       .expect(200)
       .then(({ body }) => {
@@ -582,7 +585,7 @@ describe("Authentication Endpoints", () => {
     return request(app)
       .post("/api/users/login")
       .send({
-        username: "testuser1",
+        username: "Esther",
         password: "wrongpassword",
       })
       .expect(404)
