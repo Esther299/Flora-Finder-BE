@@ -38,7 +38,7 @@ app.get("/api/protected", verifyToken, (req, res) => {
 app.get("/api/users/:username/collections", getUserCollections);
 app.post("/api/users/:username/collections", addUserCollection);
 app.delete(
-  "/api/users/:username/collections/:speciesName",
+  "/api/users/:username/collections/:plantId",
   deleteUserCollection
 );
 

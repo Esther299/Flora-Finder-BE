@@ -19,11 +19,11 @@ exports.selectUserCollections = async (username) => {
   }
 };
 
-exports.checkCollectionExists = async (username, speciesName) => {
+exports.checkCollectionExists = async (username, plantId) => {
   try {
     const [rows] = await pool.query(
-      "SELECT COUNT(*) AS count FROM UserCollection WHERE username = ? AND speciesName = ?",
-      [username, speciesName]
+      "SELECT COUNT(*) AS count FROM UserCollection WHERE username = ? AND plantId = ?",
+      [username, plantId]
     );
     const count = rows[0].count;
     if (count === 0) {
@@ -89,11 +89,11 @@ exports.insertUserCollection = async (username, newCollection) => {
   }
 };
 
-exports.deleteCollection = async (username, speciesName) => {
+exports.deleteCollection = async (username, plantId) => {
   try {
     const [result] = await pool.query(
-      "DELETE FROM UserCollection WHERE username = ? AND speciesName = ?",
-      [username, speciesName]
+      "DELETE FROM UserCollection WHERE username = ? AND plantId = ?",
+      [username, plantId]
     );
     return result.affectedRows > 0;
   } catch (error) {

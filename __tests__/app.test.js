@@ -293,7 +293,7 @@ describe("POST /api/users/:username/collections", () => {
       .expect(201)
       .then(({ body }) => {
         const { collection } = body;
-        expect(typeof collection.plantId).toBe("number");
+        expect(collection.plantId).toBe(6);
         expect(collection.speciesID).toBe(3);
         expect(collection.speciesName).toBe("Tulip");
         expect(collection.geoTag).toBe("geo-tag-2");
@@ -319,7 +319,7 @@ describe("POST /api/users/:username/collections", () => {
       .expect(201)
       .then(({ body }) => {
         const { collection } = body;
-        expect(typeof collection.plantId).toBe("number");
+        expect(collection.plantId).toBe(6);
         expect(collection.speciesID).toBe(2);
         expect(collection.speciesName).toBe("Tulip");
         expect(collection.geoTag).toBe("geo-tag-2");
@@ -405,15 +405,13 @@ describe("POST /api/users/:username/collections", () => {
   });
 });
 
-describe("DELETE /api/users/:username/collections/:collectionId", () => {
+describe("DELETE /api/users/:username/collections/:plantId", () => {
   test("DELETE:204 deletes a plant for the specified user", () => {
-    return request(app)
-      .delete("/api/users/Esther/collections/Sunflower")
-      .expect(204);
+    return request(app).delete("/api/users/Esther/collections/3").expect(204);
   });
   test("DELETE:404 responds with an appropriate status and error message when given a valid but non-existent plant", () => {
     return request(app)
-      .delete("/api/users/Esther/collections/not-a-plant")
+      .delete("/api/users/Alex/collections/not-a-plant")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Plant does not exist");
