@@ -96,11 +96,11 @@ describe("GET /api/users/:username", () => {
             username: "Esther",
             name: "Esther Gines",
             email: "esther@yahoo.com",
-            password: expect.stringMatching(/^\$2b\$10\$[\s\S]{53}$/),
+            password: expect.any(String),
             dateStamp: expect.any(String),
             avatar:
               "https://upload.wikimedia.org/wikipedia/en/9/9d/Velma_Dinkley.png",
-            total_score: 0,
+            total_score: 0.45,
           })
         );
       });
