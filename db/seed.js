@@ -81,7 +81,10 @@ async function seedDatabase() {
         username: "Yusha",
         speciesID: 1,
         speciesName: "Rose",
-        geoTag: "geo-tag-1",
+        geoTag: JSON.stringify({
+          latitude: 51.5074,
+          longitude: -0.1278,
+        }),
         matchScore: "0.23",
         image:
           "https://upload.wikimedia.org/wikipedia/commons/1/1f/A_close-up_of_climbing_roses.jpg",
@@ -91,7 +94,10 @@ async function seedDatabase() {
         username: "James",
         speciesID: 2,
         speciesName: "Tulip",
-        geoTag: "geo-tag-2",
+        geoTag: JSON.stringify({
+          latitude: 52.4862,
+          longitude: -1.8904,
+        }),
         matchScore: "0.67",
         image:
           "https://upload.wikimedia.org/wikipedia/commons/c/c4/Tulipa_orphanidea_060506.jpg",
@@ -101,7 +107,10 @@ async function seedDatabase() {
         username: "Esther",
         speciesID: 3,
         speciesName: "Sunflower",
-        geoTag: "geo-tag-3",
+        geoTag: JSON.stringify({
+          latitude: 53.483959,
+          longitude: -2.244644,
+        }),
         matchScore: "0.45",
         image:
           "https://upload.wikimedia.org/wikipedia/commons/4/40/Sunflower_sky_backdrop.jpg",
@@ -111,7 +120,10 @@ async function seedDatabase() {
         username: "Alex",
         speciesID: 4,
         speciesName: "Daffodil",
-        geoTag: "geo-tag-4",
+        geoTag: JSON.stringify({
+          latitude: 54.978252,
+          longitude: -1.617439,
+        }),
         matchScore: "0.12",
         image:
           "https://upload.wikimedia.org/wikipedia/commons/9/96/A_Perfect_Pair_Daffodills_%28Narcissus%29_-_8.jpg",
@@ -121,7 +133,10 @@ async function seedDatabase() {
         username: "Kate",
         speciesID: 5,
         speciesName: "Lily",
-        geoTag: "geo-tag-5",
+        geoTag: JSON.stringify({
+          latitude: 51.454513,
+          longitude: -2.58791,
+        }),
         matchScore: "0.65",
         image:
           "https://upload.wikimedia.org/wikipedia/commons/e/e7/Lilium_Golden_Splendour3.jpg",
