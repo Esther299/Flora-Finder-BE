@@ -157,13 +157,19 @@ exports.deleteUser = async (username) => {
 
 exports.updateUser = async (username, update) => {
   try {
-    if ("total_score" in update && typeof update.total_score !== "number") {
+    if ("avatar" in update && typeof update.avatar !== "string") {
       return Promise.reject({
         status: 400,
         msg: "Invalid input",
       });
     }
-    if ("avatar" in update && typeof update.avatar !== "string") {
+    if ("email" in update && typeof update.email !== "string") {
+      return Promise.reject({
+        status: 400,
+        msg: "Invalid input",
+      });
+    }
+    if ("name" in update && typeof update.name !== "string") {
       return Promise.reject({
         status: 400,
         msg: "Invalid input",
@@ -185,8 +191,13 @@ exports.updateUser = async (username, update) => {
       "SELECT * FROM UserAccount WHERE username = ?",
       [username]
     );
+    if (!updatedUser.length) {
+      return Promise.reject({
+        status: 404,
+        msg: "User not found",
+      });
+    }
 
-    updatedUser[0].total_score = Number(updatedUser[0].total_score);
     return updatedUser[0];
   } catch (error) {
     throw error;
