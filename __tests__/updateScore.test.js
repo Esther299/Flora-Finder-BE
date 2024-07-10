@@ -1,5 +1,5 @@
 const pool = require("../db/connection");
-const { updateTotalScore } = require("../models/collection-models"); // Adjust the path to your module
+const { updateTotalScore } = require("../models/updateTotalScore");
 const { seedDatabase } = require("../db/seed");
 
 beforeEach(async () => {

@@ -1,18 +1,40 @@
 const pool = require("../db/connection");
 const moment = require("moment");
+const { updateTotalScore } = require("./updateTotalScore");
 
-exports.selectUserCollections = async (username) => {
+exports.selectUserCollections = async (username, options = {}) => {
+  const { speciesFamily, sortBy, sortOrder } = options;
+
+  let orderByClause = "ORDER BY dateCollected DESC";
+
+  if (sortBy) {
+    let orderDirection = "DESC";
+    if (sortOrder && sortOrder.toUpperCase() === "ASC") {
+      orderDirection = "ASC";
+    }
+    orderByClause = `ORDER BY ${sortBy} ${orderDirection}`;
+  }
+
+  const queryParams = [username];
+  let query = "SELECT * FROM UserCollection WHERE username = ?";
+
+  if (speciesFamily) {
+    query += " AND speciesFamily = ?";
+    queryParams.push(speciesFamily);
+  }
+
+  query += ` ${orderByClause}`;
+
   try {
-    const [rows] = await pool.query(
-      "SELECT * FROM UserCollection WHERE username = ?",
-      [username]
-    );
+    const [rows] = await pool.query(query, queryParams);
+
     rows.forEach((row) => {
       row.matchScore = Number(row.matchScore);
       row.dateCollected = moment(row.dateCollected).format(
         "YYYY-MM-DD HH:mm:ss"
       );
     });
+
     return rows;
   } catch (error) {
     throw error;
@@ -98,23 +120,6 @@ exports.deleteCollection = async (username, plantId) => {
     );
     await updateTotalScore(username);
     return true;
-  } catch (error) {
-    throw error;
-  }
-};
-
-exports.updateTotalScore = async (username) => {
-  try {
-    const [rows] = await pool.query(
-      "SELECT COALESCE(SUM(matchScore), 0) AS totalScore FROM UserCollection WHERE username = ?",
-      [username]
-    );
-    const totalScore = rows[0].totalScore || 0;
-
-    await pool.query(
-      "UPDATE UserAccount SET total_score = ? WHERE username = ?",
-      [totalScore, username]
-    );
   } catch (error) {
     throw error;
   }

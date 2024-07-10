@@ -33,7 +33,7 @@ describe("GET /api/users", () => {
       .then(({ body }) => {
         const { users } = body;
         expect(Array.isArray(users)).toBe(true);
-        expect(users).toHaveLength(5);
+        expect(users).toHaveLength(6);
         users.forEach((user) => {
           expect(user).toMatchObject({
             username: expect.any(String),
@@ -134,7 +134,7 @@ describe("POST /api/users", () => {
         expect(user.email).toBe("test3@example.com");
         expect(user).toHaveProperty("password");
         expect(user.avatar).toBe(
-          "https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2247726673.jpg"
+          "https://i.pinimg.com/originals/8b/9d/05/8b9d05cf886a341b6a5846213a3d329e.png"
         );
       });
   });
@@ -157,7 +157,7 @@ describe("POST /api/users", () => {
         expect(user.email).toBe("test3@example.com");
         expect(user).toHaveProperty("password");
         expect(user.avatar).toBe(
-          "https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2247726673.jpg"
+          "https://i.pinimg.com/originals/8b/9d/05/8b9d05cf886a341b6a5846213a3d329e.png"
         );
       });
   });
@@ -216,205 +216,6 @@ describe("POST /api/users", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("User already exists");
-      });
-  });
-});
-
-describe("DELETE /api/users/:username", () => {
-  test("DELETE:204 deletes a user", () => {
-    return request(app).delete("/api/users/Esther").expect(204);
-  });
-  test("DELETE:404 responds with an appropriate status and error message when given a non-existent username", () => {
-    return request(app)
-      .delete("/api/users/not-a-user")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("User not found");
-      });
-  });
-});
-
-describe("GET /api/users/:username/collections", () => {
-  test("GET:200 sends an array of collections for the specified user", () => {
-    return request(app)
-      .get("/api/users/Esther/collections")
-      .expect(200)
-      .then(({ body }) => {
-        const { collections } = body;
-        expect(Array.isArray(collections)).toBe(true);
-        collections.forEach((collection) => {
-          expect(collection).toMatchObject({
-            plantId: expect.any(Number),
-            username: "Esther",
-            speciesID: expect.any(Number),
-            speciesName: expect.any(String),
-            geoTag: expect.any(String),
-            matchScore: expect.any(Number),
-            dateCollected: expect.any(String),
-            image: expect.any(String),
-            speciesFamily: expect.any(String),
-          });
-        });
-      });
-  });
-  test("GET:200 sends an empty array to the client when there are no collections for that user", () => {
-    return request(app)
-      .get("/api/users/Saleh/collections")
-      .expect(200)
-      .then(({ body }) => {
-        const { collections } = body;
-        expect(collections).toHaveLength(0);
-        expect(collections).toEqual([]);
-      });
-  });
-  test("GET:404 sends an appropriate status and error message when given a non-existent username", () => {
-    return request(app)
-      .get("/api/users/not-a-user/collections")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("User not found");
-      });
-  });
-});
-
-describe("POST /api/users/:username/collections", () => {
-  test("POST:201 adds a new plant for the specified user and sends that collection back to the client", () => {
-    const newCollection = {
-      speciesID: 3,
-      speciesName: "Tulip",
-      geoTag: "geo-tag-2",
-      matchScore: 88.5,
-      image: "image-url-2",
-      speciesFamily: "Liliaceae",
-    };
-    return request(app)
-      .post("/api/users/Esther/collections")
-      .send(newCollection)
-      .expect(201)
-      .then(({ body }) => {
-        const { collection } = body;
-        expect(collection.plantId).toBe(6);
-        expect(collection.speciesID).toBe(3);
-        expect(collection.speciesName).toBe("Tulip");
-        expect(collection.geoTag).toBe("geo-tag-2");
-        expect(collection.matchScore).toBe(88.5);
-        expect(typeof collection.dateCollected).toBe("string");
-        expect(collection.image).toBe("image-url-2");
-        expect(collection.speciesFamily).toBe("Liliaceae");
-      });
-  });
-  test("POST:201 adds a new collection for the specified user even with extra properties in the request body", () => {
-    const newCollection = {
-      speciesID: 2,
-      speciesName: "Tulip",
-      geoTag: "geo-tag-2",
-      matchScore: 88.5,
-      image: "image-url-2",
-      speciesFamily: "Liliaceae",
-      extraProperty: 2,
-    };
-    return request(app)
-      .post("/api/users/Esther/collections")
-      .send(newCollection)
-      .expect(201)
-      .then(({ body }) => {
-        const { collection } = body;
-        expect(collection.plantId).toBe(6);
-        expect(collection.speciesID).toBe(2);
-        expect(collection.speciesName).toBe("Tulip");
-        expect(collection.geoTag).toBe("geo-tag-2");
-        expect(collection.matchScore).toBe(88.5);
-        expect(typeof collection.dateCollected).toBe("string");
-        expect(collection.image).toBe("image-url-2");
-        expect(collection.speciesFamily).toBe("Liliaceae");
-      });
-  });
-  test("POST:400 sends an appropriate status and error message when provided with a bad collection (no collection body)", () => {
-    return request(app)
-      .post("/api/users/Esther/collections")
-      .send({
-        uniqueSerialID: "unique-id-456",
-        speciesID: 2,
-        speciesName: "Tulip",
-        geoTag: "geo-tag-2",
-      })
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid input");
-      });
-  });
-  test("POST:400 sends an appropriate status and error message when provided with invalid property types", () => {
-    const newCollection = {
-      uniqueSerialID: "unique-id-456",
-      speciesID: 2,
-      speciesName: "Tulip",
-      geoTag: 123,
-      matchScore: 88.5,
-      dateCollected: "2024-07-01 19:10:26",
-      image: "image-url-2",
-      speciesFamily: "Liliaceae",
-      extraProperty: 2,
-    };
-    return request(app)
-      .post("/api/users/Esther/collections")
-      .send(newCollection)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Bad request");
-      });
-  });
-  test("POST:400 sends an appropriate status and error message when provided with invalid property types", () => {
-    const newCollection = {
-      uniqueSerialID: "unique-id-456",
-      speciesID: "Hello",
-      speciesName: "Tulip",
-      geoTag: "geo-tag-2",
-      matchScore: 88.5,
-      dateCollected: "2024-07-01 19:10:26",
-      image: "image-url-2",
-      speciesFamily: "Liliaceae",
-      extraProperty: 2,
-    };
-    return request(app)
-      .post("/api/users/Esther/collections")
-      .send(newCollection)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Bad request");
-      });
-  });
-  test("POST:404 sends an appropriate status and error message when given a non-existent user id", () => {
-    const newCollection = {
-      uniqueSerialID: "unique-id-456",
-      speciesID: 2,
-      speciesName: "Tulip",
-      geoTag: "geo-tag-2",
-      matchScore: 88.5,
-      dateCollected: "2024-07-01 19:10:26",
-      image: "image-url-2",
-      speciesFamily: "Liliaceae",
-      extraProperty: 2,
-    };
-    return request(app)
-      .post("/api/users/not-a-user/collections")
-      .send(newCollection)
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("User not found");
-      });
-  });
-});
-
-describe("DELETE /api/users/:username/collections/:plantId", () => {
-  test("DELETE:204 deletes a plant for the specified user", () => {
-    return request(app).delete("/api/users/Esther/collections/3").expect(204);
-  });
-  test("DELETE:404 responds with an appropriate status and error message when given a valid but non-existent plant", () => {
-    return request(app)
-      .delete("/api/users/Alex/collections/not-a-plant")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Plant does not exist");
       });
   });
 });
@@ -572,6 +373,250 @@ describe("PATCH /api/users/:username", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("User not found");
+      });
+  });
+});
+
+describe("DELETE /api/users/:username", () => {
+  test("DELETE:204 deletes a user", () => {
+    return request(app).delete("/api/users/Esther").expect(204);
+  });
+  test("DELETE:404 responds with an appropriate status and error message when given a non-existent username", () => {
+    return request(app)
+      .delete("/api/users/not-a-user")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User not found");
+      });
+  });
+});
+
+describe("GET /api/users/:username/collections", () => {
+  test("GET:200 sends an array of collections for the specified user", () => {
+    return request(app)
+      .get("/api/users/Esther/collections")
+      .expect(200)
+      .then(({ body }) => {
+        const { collections } = body;
+        expect(Array.isArray(collections)).toBe(true);
+        collections.forEach((collection) => {
+          expect(collection).toMatchObject({
+            plantId: expect.any(Number),
+            username: "Esther",
+            speciesID: expect.any(Number),
+            speciesName: expect.any(String),
+            geoTag: expect.any(String),
+            matchScore: expect.any(Number),
+            dateCollected: expect.any(String),
+            image: expect.any(String),
+            speciesFamily: expect.any(String),
+          });
+        });
+      });
+  });
+  test("GET:200 sends an empty array to the client when there are no collections for that user", () => {
+    return request(app)
+      .get("/api/users/Saleh/collections")
+      .expect(200)
+      .then(({ body }) => {
+        const { collections } = body;
+        expect(collections).toHaveLength(0);
+        expect(collections).toEqual([]);
+      });
+  });
+  test("GET:200 sends an array of collections sorted by dateCollected in descending order by default", () => {
+    return request(app)
+      .get("/api/users/Esther/collections")
+      .expect(200)
+      .then(({ body }) => {
+        const { collections } = body;
+        expect(collections).toBeSortedBy("dateCollected", { descending: true });
+      });
+  });
+  test("GET:200 sends an array of collections sorted by dateCollected in ascending order when query param 'orderBy=asc' is passed", () => {
+    return request(app)
+      .get("/api/users/Esther/collections?orderBy=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const { collections } = body;
+        expect(collections).toBeSortedBy("dateCollected", { ascending: true });
+      });
+  });
+  test("GET:200 sends an array of collections sorted by speciesName in ascending order when query param 'sortBy=speciesName' is passed", () => {
+    return request(app)
+      .get("/api/users/Esther/collections?sortBy=speciesName")
+      .expect(200)
+      .then(({ body }) => {
+        const { collections } = body;
+        expect(collections).toBeSortedBy("speciesName", { ascending: true });
+      });
+  });
+  test("GET:200 sends an array of collections sorted by matchScore in descending order when query param 'sortBy=matchScore&orderBy=desc' is passed", () => {
+    return request(app)
+      .get("/api/users/Esther/collections?sortBy=matchScore&orderBy=desc")
+      .expect(200)
+      .then(({ body }) => {
+        const { collections } = body;
+        expect(collections).toBeSortedBy("matchScore", { descending: true });
+      });
+  });
+  test("GET:200 sends an array of collections sorted by speciesFamily in ascending order when query param 'sortBy=speciesFamily&orderBy=asc' is passed", () => {
+    return request(app)
+      .get("/api/users/Esther/collections?sortBy=speciesFamily&orderBy=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const { collections } = body;
+        expect(collections).toBeSortedBy("speciesFamily", { ascending: true });
+      });
+  });
+  test("GET:404 sends an appropriate status and error message when given a non-existent username", () => {
+    return request(app)
+      .get("/api/users/not-a-user/collections")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User not found");
+      });
+  });
+});
+
+describe("POST /api/users/:username/collections", () => {
+  test("POST:201 adds a new plant for the specified user and sends that collection back to the client", () => {
+    const newCollection = {
+      speciesID: 3,
+      speciesName: "Tulip",
+      geoTag: "geo-tag-2",
+      matchScore: 88.5,
+      image: "image-url-2",
+      speciesFamily: "Liliaceae",
+    };
+    return request(app)
+      .post("/api/users/Esther/collections")
+      .send(newCollection)
+      .expect(201)
+      .then(({ body }) => {
+        const { collection } = body;
+        expect(collection.plantId).toBe(6);
+        expect(collection.speciesID).toBe(3);
+        expect(collection.speciesName).toBe("Tulip");
+        expect(collection.geoTag).toBe("geo-tag-2");
+        expect(collection.matchScore).toBe(88.5);
+        expect(typeof collection.dateCollected).toBe("string");
+        expect(collection.image).toBe("image-url-2");
+        expect(collection.speciesFamily).toBe("Liliaceae");
+      });
+  });
+  test("POST:201 adds a new collection for the specified user even with extra properties in the request body", () => {
+    const newCollection = {
+      speciesID: 2,
+      speciesName: "Tulip",
+      geoTag: "geo-tag-2",
+      matchScore: 88.5,
+      image: "image-url-2",
+      speciesFamily: "Liliaceae",
+      extraProperty: 2,
+    };
+    return request(app)
+      .post("/api/users/Esther/collections")
+      .send(newCollection)
+      .expect(201)
+      .then(({ body }) => {
+        const { collection } = body;
+        expect(collection.plantId).toBe(6);
+        expect(collection.speciesID).toBe(2);
+        expect(collection.speciesName).toBe("Tulip");
+        expect(collection.geoTag).toBe("geo-tag-2");
+        expect(collection.matchScore).toBe(88.5);
+        expect(typeof collection.dateCollected).toBe("string");
+        expect(collection.image).toBe("image-url-2");
+        expect(collection.speciesFamily).toBe("Liliaceae");
+      });
+  });
+  test("POST:400 sends an appropriate status and error message when provided with a bad collection (no collection body)", () => {
+    return request(app)
+      .post("/api/users/Esther/collections")
+      .send({
+        uniqueSerialID: "unique-id-456",
+        speciesID: 2,
+        speciesName: "Tulip",
+        geoTag: "geo-tag-2",
+      })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid input");
+      });
+  });
+  test("POST:400 sends an appropriate status and error message when provided with invalid property types", () => {
+    const newCollection = {
+      uniqueSerialID: "unique-id-456",
+      speciesID: 2,
+      speciesName: "Tulip",
+      geoTag: 123,
+      matchScore: 88.5,
+      dateCollected: "2024-07-01 19:10:26",
+      image: "image-url-2",
+      speciesFamily: "Liliaceae",
+      extraProperty: 2,
+    };
+    return request(app)
+      .post("/api/users/Esther/collections")
+      .send(newCollection)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("POST:400 sends an appropriate status and error message when provided with invalid property types", () => {
+    const newCollection = {
+      uniqueSerialID: "unique-id-456",
+      speciesID: "Hello",
+      speciesName: "Tulip",
+      geoTag: "geo-tag-2",
+      matchScore: 88.5,
+      dateCollected: "2024-07-01 19:10:26",
+      image: "image-url-2",
+      speciesFamily: "Liliaceae",
+      extraProperty: 2,
+    };
+    return request(app)
+      .post("/api/users/Esther/collections")
+      .send(newCollection)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("POST:404 sends an appropriate status and error message when given a non-existent user id", () => {
+    const newCollection = {
+      uniqueSerialID: "unique-id-456",
+      speciesID: 2,
+      speciesName: "Tulip",
+      geoTag: "geo-tag-2",
+      matchScore: 88.5,
+      dateCollected: "2024-07-01 19:10:26",
+      image: "image-url-2",
+      speciesFamily: "Liliaceae",
+      extraProperty: 2,
+    };
+    return request(app)
+      .post("/api/users/not-a-user/collections")
+      .send(newCollection)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("User not found");
+      });
+  });
+});
+
+describe("DELETE /api/users/:username/collections/:plantId", () => {
+  test("DELETE:204 deletes a plant for the specified user", () => {
+    return request(app).delete("/api/users/Esther/collections/3").expect(204);
+  });
+  test("DELETE:404 responds with an appropriate status and error message when given a valid but non-existent plant", () => {
+    return request(app)
+      .delete("/api/users/Alex/collections/not-a-plant")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Plant does not exist");
       });
   });
 });
