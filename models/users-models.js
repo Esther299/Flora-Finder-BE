@@ -88,7 +88,7 @@ exports.createUser = async (newUser) => {
       VALUES (?, ?, ?, ?, ?)
     `;
     const defaultAvatar =
-      "https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2247726673.jpg";
+      "https://i.pinimg.com/originals/8b/9d/05/8b9d05cf886a341b6a5846213a3d329e.png";
 
     const [result] = await pool.query(sql, [
       username,
