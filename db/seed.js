@@ -182,6 +182,7 @@ async function seedDatabase() {
     connection.release();
   } catch (error) {
     console.error("Error seeding the database:", error);
+    throw error;
   }
 }
 
