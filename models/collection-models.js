@@ -103,7 +103,7 @@ exports.deleteCollection = async (username, plantId) => {
   }
 };
 
-async function updateTotalScore(username) {
+exports.updateTotalScore = async (username) => {
   try {
     const [rows] = await pool.query(
       "SELECT COALESCE(SUM(matchScore), 0) AS totalScore FROM UserCollection WHERE username = ?",
@@ -118,4 +118,4 @@ async function updateTotalScore(username) {
   } catch (error) {
     throw error;
   }
-}
+};

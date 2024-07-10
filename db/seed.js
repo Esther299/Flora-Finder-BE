@@ -74,6 +74,14 @@ async function seedDatabase() {
         avatar:
           "https://upload.wikimedia.org/wikipedia/en/1/1d/Daphne_Blake.png",
       },
+      {
+        username: "Saleh",
+        name: "Daniel Saleh",
+        email: "saleh@northcoders.com",
+        password: bcrypt.hashSync("FloraSquad5", 10),
+        avatar:
+          "https://i.pinimg.com/originals/8b/9d/05/8b9d05cf886a341b6a5846213a3d329e.png",
+      },
     ];
 
     const seedCollections = [
@@ -182,6 +190,7 @@ async function seedDatabase() {
     connection.release();
   } catch (error) {
     console.error("Error seeding the database:", error);
+    throw error;
   }
 }
 
