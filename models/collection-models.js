@@ -3,13 +3,13 @@ const moment = require("moment");
 const { updateTotalScore } = require("./updateTotalScore");
 
 exports.selectUserCollections = async (username, options = {}) => {
-  const { speciesFamily, sortBy, sortOrder } = options;
+  const { speciesFamily, sortBy, orderBy } = options;
 
   let orderByClause = "ORDER BY dateCollected DESC";
 
   if (sortBy) {
     let orderDirection = "DESC";
-    if (sortOrder && sortOrder.toUpperCase() === "ASC") {
+    if (orderBy && orderBy.toUpperCase() === "ASC") {
       orderDirection = "ASC";
     }
     orderByClause = `ORDER BY ${sortBy} ${orderDirection}`;

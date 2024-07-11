@@ -1,5 +1,6 @@
 const pool = require("./connection");
 const bcrypt = require("bcrypt");
+const { seedUsers, seedCollections } = require("./data/dev-data");
 
 async function seedDatabase() {
   try {
@@ -35,123 +36,6 @@ async function seedDatabase() {
     await connection.query(createUsersTable);
     await connection.query(createCollectionsTable);
 
-    const seedUsers = [
-      {
-        username: "Yusha",
-        name: "Yusha Rooshenas",
-        email: "yusha@hotmail.com",
-        password: bcrypt.hashSync("FloraSquad5", 10),
-        avatar: "https://upload.wikimedia.org/wikipedia/en/5/53/Scooby-Doo.png",
-      },
-      {
-        username: "James",
-        name: "James Wallace",
-        email: "james@gmail.com",
-        password: bcrypt.hashSync("FloraSquad5", 10),
-        avatar:
-          "https://upload.wikimedia.org/wikipedia/en/8/87/ShaggyRogers.png",
-      },
-      {
-        username: "Esther",
-        name: "Esther Gines",
-        email: "esther@yahoo.com",
-        password: bcrypt.hashSync("FloraSquad5", 10),
-        avatar:
-          "https://upload.wikimedia.org/wikipedia/en/9/9d/Velma_Dinkley.png",
-      },
-      {
-        username: "Alex",
-        name: "Alex Hughes",
-        email: "alex@googlemail.com",
-        password: bcrypt.hashSync("FloraSquad5", 10),
-        avatar: "https://upload.wikimedia.org/wikipedia/en/4/47/Fred_Jones.png",
-      },
-      {
-        username: "Kate",
-        name: "Kate Blacklock",
-        email: "kate@xataka.com",
-        password: bcrypt.hashSync("FloraSquad5", 10),
-        avatar:
-          "https://upload.wikimedia.org/wikipedia/en/1/1d/Daphne_Blake.png",
-      },
-      {
-        username: "Saleh",
-        name: "Daniel Saleh",
-        email: "saleh@northcoders.com",
-        password: bcrypt.hashSync("FloraSquad5", 10),
-        avatar:
-          "https://i.pinimg.com/originals/8b/9d/05/8b9d05cf886a341b6a5846213a3d329e.png",
-      },
-    ];
-
-    const seedCollections = [
-      {
-        username: "Yusha",
-        speciesID: 1,
-        speciesName: "Rose",
-        geoTag: JSON.stringify({
-          latitude: 51.5074,
-          longitude: -0.1278,
-        }),
-        matchScore: "0.23",
-        image:
-          "https://upload.wikimedia.org/wikipedia/commons/1/1f/A_close-up_of_climbing_roses.jpg",
-        speciesFamily: "Rosaceae",
-      },
-      {
-        username: "James",
-        speciesID: 2,
-        speciesName: "Tulip",
-        geoTag: JSON.stringify({
-          latitude: 52.4862,
-          longitude: -1.8904,
-        }),
-        matchScore: "0.67",
-        image:
-          "https://upload.wikimedia.org/wikipedia/commons/c/c4/Tulipa_orphanidea_060506.jpg",
-        speciesFamily: "Liliaceae",
-      },
-      {
-        username: "Esther",
-        speciesID: 3,
-        speciesName: "Sunflower",
-        geoTag: JSON.stringify({
-          latitude: 53.483959,
-          longitude: -2.244644,
-        }),
-        matchScore: "0.45",
-        image:
-          "https://upload.wikimedia.org/wikipedia/commons/4/40/Sunflower_sky_backdrop.jpg",
-        speciesFamily: "Asteraceae",
-      },
-      {
-        username: "Alex",
-        speciesID: 4,
-        speciesName: "Daffodil",
-        geoTag: JSON.stringify({
-          latitude: 54.978252,
-          longitude: -1.617439,
-        }),
-        matchScore: "0.12",
-        image:
-          "https://upload.wikimedia.org/wikipedia/commons/9/96/A_Perfect_Pair_Daffodills_%28Narcissus%29_-_8.jpg",
-        speciesFamily: "Amaryllidaceae",
-      },
-      {
-        username: "Kate",
-        speciesID: 5,
-        speciesName: "Lily",
-        geoTag: JSON.stringify({
-          latitude: 51.454513,
-          longitude: -2.58791,
-        }),
-        matchScore: "0.65",
-        image:
-          "https://upload.wikimedia.org/wikipedia/commons/e/e7/Lilium_Golden_Splendour3.jpg",
-        speciesFamily: "Liliaceae",
-      },
-    ];
-
     const insertUserQuery = `
       INSERT INTO UserAccount (username, name, email, password, avatar)
       VALUES (?, ?, ?, ?, ?)
@@ -159,13 +43,14 @@ async function seedDatabase() {
     `;
 
     for (const user of seedUsers) {
-      await connection.query(insertUserQuery, [
+        await connection.query(insertUserQuery, [
         user.username,
         user.name,
         user.email,
         user.password,
         user.avatar,
       ]);
+      
     }
 
     const insertCollectionQuery = `

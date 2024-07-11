@@ -8,7 +8,9 @@ const { checkUserExists } = require("../models/users-models");
 
 exports.getUserCollections = (req, res, next) => {
   const { username } = req.params;
-  const promises = [selectUserCollections(username)];
+  const options = req.query
+  console.log(options)
+  const promises = [selectUserCollections(username, options)];
 
   if (username) {
     promises.push(checkUserExists(username));
