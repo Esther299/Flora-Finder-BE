@@ -1,6 +1,7 @@
 const pool = require("../db/connection");
 const moment = require("moment");
 const { updateTotalScore } = require("./updateTotalScore");
+
 exports.selectAllCollections = async () => {
   try {
     const query = "SELECT * FROM UserCollection";
@@ -10,8 +11,12 @@ exports.selectAllCollections = async () => {
     throw error;
   }
 };
+
 exports.selectUserCollections = async (username, options = {}) => {
   const { speciesFamily, sortBy, orderBy } = options;
+
+  const validSortBy = ["matchScore", "speciesName", "dateCollected"];
+  const validOrderBy = ["asc", "desc", "ASC", "DESC"];
 
   let orderByClause = "ORDER BY dateCollected DESC";
 
@@ -24,6 +29,18 @@ exports.selectUserCollections = async (username, options = {}) => {
       orderDirection = "ASC";
     }
     orderByClause = `ORDER BY ${sortBy} ${orderDirection}`;
+  }
+  if (sortBy && !validSortBy.includes(sortBy)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad query request",
+    });
+  }
+  if (orderBy && !validOrderBy.includes(orderBy)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad query request",
+    });
   }
 
   const queryParams = [username];

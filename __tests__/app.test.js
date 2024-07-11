@@ -423,7 +423,6 @@ describe("GET /api/users/:username/collections", () => {
       .expect(200)
       .then(({ body }) => {
         const { collections } = body;
-        console.log(collections)
         expect(Array.isArray(collections)).toBe(true);
         collections.forEach((collection) => {
           expect(collection).toMatchObject({
@@ -468,31 +467,47 @@ describe("GET /api/users/:username/collections", () => {
         expect(collections).toBeSortedBy("dateCollected", { ascending: true });
       });
   });
-  test("GET:200 sends an array of collections sorted by speciesName in ascending order when query param 'sortBy=speciesName' is passed", () => {
-    return request(app)
-      .get("/api/users/Esther/collections?sortBy=speciesName")
+  test("GET:200 sends an array of collections sorted by any valid column", () => {
+    const validColumns = ["matchScore", "speciesName", "dateCollected"];
+    for (const validColumn of validColumns) {
+       return request(app)
+      .get(`/api/users/Esther/collections?sortBy=${validColumn}`)
       .expect(200)
       .then(({ body }) => {
         const { collections } = body;
-        expect(collections).toBeSortedBy("speciesName", { descending: true });
+        expect(collections).toBeSortedBy(validColumn, { descending: true });
+      });
+    }
+  });
+  test("GET:200 sends an array of collections sorted by matchScore in descending order when query param 'sortBy=matchScore&orderBy=asc' is passed", () => {
+    return request(app)
+      .get("/api/users/Esther/collections?sortBy=matchScore&orderBy=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const { collections } = body;
+        expect(collections).toBeSortedBy("matchScore", { ascending: true });
       });
   });
-  test("GET:200 sends an array of collections sorted by matchScore in descending order when query param 'sortBy=matchScore&orderBy=desc' is passed", () => {
+  test("GET:200 sends an array of collections filtered by speciesFamily", () => {
     return request(app)
-      .get("/api/users/Esther/collections?sortBy=matchScore&orderBy=desc")
+      .get("/api/users/Esther/collections?speciesFamily=Ranunculaceae")
       .expect(200)
       .then(({ body }) => {
         const { collections } = body;
-        expect(collections).toBeSortedBy("matchScore", { descending: true });
-      });
-  });
-  test("GET:200 sends an array of collections sorted by speciesFamily in ascending order when query param 'sortBy=speciesFamily&orderBy=asc' is passed", () => {
-    return request(app)
-      .get("/api/users/Esther/collections?sortBy=speciesFamily&orderBy=asc")
-      .expect(200)
-      .then(({ body }) => {
-        const { collections } = body;
-        expect(collections).toBeSortedBy("speciesFamily", { ascending: true });
+        expect(Array.isArray(collections)).toBe(true);
+        collections.forEach((collection) => {
+          expect(collection).toMatchObject({
+            plantId: expect.any(Number),
+            username: "Esther",
+            speciesID: expect.any(Number),
+            speciesName: expect.any(String),
+            geoTag: expect.any(String),
+            matchScore: expect.any(Number),
+            dateCollected: expect.any(String),
+            image: expect.any(String),
+            speciesFamily: "Ranunculaceae",
+          });
+        });
       });
   });
   test("GET:404 sends an appropriate status and error message when given a non-existent username", () => {
@@ -501,6 +516,22 @@ describe("GET /api/users/:username/collections", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("User not found");
+      });
+  });
+  test('GET:400 sends a message of "Bad query request" when passed an invalid sort by query', () => {
+    return request(app)
+      .get("/api/users/Esther/collections?sortBy=speciesId")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad query request");
+      });
+  });
+  test('GET:400 sends a message of "Bad query request" when passed an invalid order by query', () => {
+    return request(app)
+      .get("/api/users/Esther/collections?orderBy=speciesId")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad query request");
       });
   });
 });
@@ -639,7 +670,7 @@ describe("DELETE /api/users/:username/collections/:plantId", () => {
   });
   test("DELETE:404 responds with an appropriate status and error message when given a valid but non-existent plant", () => {
     return request(app)
-      .delete("/api/users/Alex/collections/not-a-plant")
+      .delete("/api/users/Alex/collections/999")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Plant does not exist");
