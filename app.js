@@ -8,13 +8,14 @@ const {
   patchUserByUsername,
 } = require("./controllers/users-controllers");
 const {
+  getCollections,
   getUserCollections,
   addUserCollection,
   deleteUserCollection,
 } = require("./controllers/collection-controllers");
 const { verifyToken } = require("./controllers/verify-tolken-middleware");
 const { getEndpoints } = require("./controllers/api-controller");
-const cors = require('cors');
+const cors = require("cors");
 
 const app = express();
 app.use(cors());
@@ -35,12 +36,10 @@ app.get("/api/protected", verifyToken, (req, res) => {
 });
 
 //Collections:
+app.get("/api/collections", getCollections);
 app.get("/api/users/:username/collections", getUserCollections);
 app.post("/api/users/:username/collections", addUserCollection);
-app.delete(
-  "/api/users/:username/collections/:plantId",
-  deleteUserCollection
-);
+app.delete("/api/users/:username/collections/:plantId", deleteUserCollection);
 
 // Handle unknown routes
 app.all("*", (req, res) => {

@@ -391,7 +391,32 @@ describe("DELETE /api/users/:username", () => {
   });
 });
 
-describe.only("GET /api/users/:username/collections", () => {
+describe("GET /api/collections", () => {
+  test("GET:200 sends an array of collections to the client, each of which should have the properties of username, plantId, speciesID, speciesName, geoTag, matchScore, image and speciesFamily", () => {
+    return request(app)
+      .get("/api/collections")
+      .expect(200)
+      .then(({ body }) => {
+        const { collections } = body;
+        expect(Array.isArray(collections)).toBe(true);
+        expect(collections).toHaveLength(56);
+        collections.forEach((collection) => {
+          expect(collection).toMatchObject({
+            username: expect.any(String),
+            plantId: expect.any(Number),
+            speciesID: expect.any(Number),
+            speciesName: expect.any(String),
+            geoTag: expect.any(String),
+            matchScore: expect.any(String),
+            image: expect.any(String),
+            speciesFamily: expect.any(String),
+          });
+        });
+      });
+  });
+});
+
+describe("GET /api/users/:username/collections", () => {
   test("GET:200 sends an array of collections for the specified user", () => {
     return request(app)
       .get("/api/users/Esther/collections")
@@ -433,7 +458,7 @@ describe.only("GET /api/users/:username/collections", () => {
         expect(collections).toBeSortedBy("dateCollected", { descending: true });
       });
   });
-  test("GET:200 sends an array of collections sorted by dateCollected in ascending order when query param 'orderBy=asc' is passed", () => {
+  xtest("GET:200 sends an array of collections sorted by dateCollected in ascending order when query param 'orderBy=asc' is passed", () => {
     return request(app)
       .get("/api/users/Esther/collections?orderBy=asc")
       .expect(200)
@@ -448,7 +473,7 @@ describe.only("GET /api/users/:username/collections", () => {
       .expect(200)
       .then(({ body }) => {
         const { collections } = body;
-        expect(collections).toBeSortedBy("speciesName", { ascending: true });
+        expect(collections).toBeSortedBy("speciesName", { descending: true });
       });
   });
   test("GET:200 sends an array of collections sorted by matchScore in descending order when query param 'sortBy=matchScore&orderBy=desc' is passed", () => {

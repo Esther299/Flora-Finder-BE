@@ -1,7 +1,15 @@
 const pool = require("../db/connection");
 const moment = require("moment");
 const { updateTotalScore } = require("./updateTotalScore");
-
+exports.selectAllCollections = async () => {
+  try {
+    const query = "SELECT * FROM UserCollection";
+    const [rows] = await pool.query(query);
+    return rows;
+  } catch {
+    throw error;
+  }
+};
 exports.selectUserCollections = async (username, options = {}) => {
   const { speciesFamily, sortBy, orderBy } = options;
 

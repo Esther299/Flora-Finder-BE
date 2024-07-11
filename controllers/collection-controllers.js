@@ -1,4 +1,5 @@
 const {
+  selectAllCollections,
   selectUserCollections,
   insertUserCollection,
   deleteCollection,
@@ -6,10 +7,19 @@ const {
 } = require("../models/collection-models");
 const { checkUserExists } = require("../models/users-models");
 
+exports.getCollections = (req, res, next) => {
+  return selectAllCollections()
+    .then((collections) => {
+      res.status(200).send({ collections });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
 exports.getUserCollections = (req, res, next) => {
   const { username } = req.params;
-  const options = req.query
-  console.log(options)
+  const options = req.query;
   const promises = [selectUserCollections(username, options)];
 
   if (username) {
