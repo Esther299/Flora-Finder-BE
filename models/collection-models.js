@@ -15,6 +15,9 @@ exports.selectUserCollections = async (username, options = {}) => {
 
   let orderByClause = "ORDER BY dateCollected DESC";
 
+  if (!sortBy && orderBy) {
+    orderByClause = `ORDER BY dateCollected ${orderBy.toUpperCase()}`;
+  }
   if (sortBy) {
     let orderDirection = "DESC";
     if (orderBy && orderBy.toUpperCase() === "ASC") {

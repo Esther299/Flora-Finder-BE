@@ -423,6 +423,7 @@ describe("GET /api/users/:username/collections", () => {
       .expect(200)
       .then(({ body }) => {
         const { collections } = body;
+        console.log(collections)
         expect(Array.isArray(collections)).toBe(true);
         collections.forEach((collection) => {
           expect(collection).toMatchObject({
@@ -458,7 +459,7 @@ describe("GET /api/users/:username/collections", () => {
         expect(collections).toBeSortedBy("dateCollected", { descending: true });
       });
   });
-  xtest("GET:200 sends an array of collections sorted by dateCollected in ascending order when query param 'orderBy=asc' is passed", () => {
+  test("GET:200 sends an array of collections sorted by dateCollected in ascending order when query param 'orderBy=asc' is passed", () => {
     return request(app)
       .get("/api/users/Esther/collections?orderBy=asc")
       .expect(200)
@@ -634,7 +635,7 @@ describe("POST /api/users/:username/collections", () => {
 
 describe("DELETE /api/users/:username/collections/:plantId", () => {
   test("DELETE:204 deletes a plant for the specified user", () => {
-    return request(app).delete("/api/users/Esther/collections/13").expect(204);
+    return request(app).delete("/api/users/Esther/collections/10").expect(204);
   });
   test("DELETE:404 responds with an appropriate status and error message when given a valid but non-existent plant", () => {
     return request(app)
